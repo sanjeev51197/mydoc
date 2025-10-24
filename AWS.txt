@@ -1,0 +1,82 @@
+AWS
+---------------------------------
+
+EBS ->
+EBS = Elastic Block Store
+Think of it like a hard disk (or SSD) that you attach to your EC2 instance.
+
+Just like your laptop needs a hard drive to store files, your EC2 instance (virtual machine) needs storage — that’s EBS.
+
+💾 Simple Analogy ---------------------
+
+🖥️ EC2 instance → your computer
+💽 EBS volume → your computer’s hard drive
+
+When you stop or restart your computer (EC2), the hard drive (EBS) still keeps all your data safe.
+
+
+
+note-
+The volume that is automatically created is called root volume
+
+steps to create and attach volume.
+
+Create instance ->  the zone whherevyour instance is. The EBS should be in the same zone.........
+
+now create the volume 
+and select the same zone where your server is..  
+give the name of the volume.
+select the volume and in actions -> attach the volume.
+
+now to check the storage 
+first in pem file open gitbash terminal
+paste the instance url
+and click yes
+
+now in command 
+type  -> lsblk (to verify disk space)
+
+now to create a folder in external disk and add some file ->
+
+----------------------------------------------------------------
+
+first verify the disk using lsblk...........
+then get the disk name in left corner
+
+now to create a file system ..........that is format the disk now it is 
+available to store the data.
+---------------------------------------------------------------
+-> sudo mkfs -t ext4 /dev/nvme1n1    hit enter
+-> now go back to pwd thst is ec2
+
+-> cd ~
+-> pwd
+-> mkdir psa  (creating psa directory)
+-> ls -l  (to check folder)
+-> sudo mount /dev/nvme1n1 psa   ( to mount the device)
+
+-> sudo touch A.txt B.txt (to create file in psa folder
+
+-> cd ~ ( go back to ec2)
+
+- > lsblk (check the device) 
+
+ -----------------------------------------------------------
+
+note-
+seven types of storage in aws.
+IOPs-  input output operation per second
+throughput - how much amount of data i can write it per second.
+
+
+
+
+
+
+
+
+
+
+
+
+

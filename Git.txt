@@ -1,0 +1,230 @@
+First Install Git
+Create GitHub Account.
+
+Now in your local disk .
+create a folder and add 3-4 txt documents with name A,B,C etc.
+
+now click on the path of the drive and hit cmd
+
+now register/config yourself in git
+
+using command ------------------------------
+
+ -> git config --global user.name "sanjeev51197"     hit enter
+
+->  git config --global user.name "sanjeev51197@gmail.com"     hit enter
+
+-> git init   hit enter (to create empty git repository that is hidden)
+
+-> git status      (to check the status of file which is committed or not)
+
+->git add A.txt     
+
+->  git status (  green means it is committed and red not committed)
+
+->  git commit -m "ADDED A.txt"  (to commit)
+
+===========================================================================
+
+now create a remote repository in GitHub.....
+
+ex -test1   and click on test1
+copy the the command linessss word and paste on cmd.........
+sign in the GitHub
+
+now to add multiple files at once......
+--------------------------------------------------
+
+-> git add .     hit enter
+
+-> git status.
+
+-> git commit -m "ADDED ALL"
+
+->  git log
+
+-> git push 
+
+now go and refresh your repository in GitHub it will be added..
+
+
+ ACCESS USING GITHUB TOKEN
+..........................................................................
+
+go to GitHub -> Setting -> Developer Setting -> Generate Token(Click All)
+Copy the Token .............
+
+
+now in local disk 
+Create folder and add 3-4 txt document,,,,,,,
+
+Now open cmd using path of folder....
+
+-> git init
+
+-> git add .   ( to stage all the files) 
+
+-> git status
+
+now to unstage one file among all
+
+-> git rm --cached A.txt
+
+
+............
+
+now if you made a file and added some content...
+and after some days you modified that content.. 
+now to go back to previous stage .We use "restore"...
+
+first 
+file should be committed.'
+
+->git commit -m "first commit"
+
+->git status
+
+now go to file and modify the content.......
+
+-> git add A.txt (modified and added)
+
+->git status
+
+->git restore A.txt   (restoring the previous )
+
+
+--------------------------------------------------------------------
+
+Remove and re-add the remote
+
+If you want to start fresh:
+
+git remote remove origin
+git remote add origin https://github.com/sanjeev51197/test6.git
+
+Finally, push your code
+
+Once the correct remote is set:
+
+git push -u origin main
+
+All the files will be added to test6 repo..
+
+
+now if youd made another file .
+by name sk.txt
+
+just -> add sk.txt
+     -> git status
+     -> git commit -m "last commit"
+     -> git push  (to push the file from your local repo to remote repo)
+
+
+..................................
+
+TO GET PROJECT CODE IN YOUR LOCAL SYSTYEM.
+
+FIRST COPY THE URL FROM <CODE> SECTION
+
+MAKE A FOLDER IN YOUR LOCAL COMPUTER AND OPEN GITBASH THERE
+
+AND HIT----
+
+-> git clone https://github.com/sanjeev51197/test6.git
+
+it is used for the first time when you download the project in your local computer.
+-----------------------------------------------------------------------------
+
+Git commmands-
+
+===================
+
+1. git init
+
+2. git status
+
+3. git add           ex git add A.txt    to add all file   -> git add .
+
+4. git commit         ex git commit -m "exyss"
+
+5.git push
+
+6.git clone     (to download from remote to local disk  ex-> git clone https://...url
+
+7.git log -check commit history
+
+
+if accidently you have pushed any file in your git hub then in order to remove that . we ll have to follow the steps--
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+-> git rm A.txt   (it will remove the file from working tree that is from disk)
+
+-> git commit -m "First commit"
+
+-> git push ( now check the file is gone from GitHub)
+
+
+git init
+git add .
+git commit -m "first commit"
+git branch -M main
+git remote add origin https://github.com/sanjeev51197/test1.git
+git push -u origin main
+
+
+after cloning the project (downloading the project)
+------------------------------------------------------
+if developer changes some content in the file then we need to pull that changes
+in our local file too
+
+for that we use -> git pull
+
+pull will compare the code from local to GitHub repo.and whatever code will not match to local .it will pull that code from GitHub repo to local repo.
+
+
+ANOTHER WAY TO PUSH CODE VIA GUI 
+-----------------------------------
+->COPY THE URL FROM GITHUB REPOSITORY.
+
+MAKE A FOLDER IN YOUR LOCAL DISK AND CREATE 2-3 FILES.
+
+OPEN GUI IN FOLDER SECTION
+
+click on stage
+click on commit and add comments
+click on push and give the url. 
+
+-----------------------------------------------------------------------------
+
+To interact with GitHub directly with IntelliJ
+
+setting -> version control -> GitHub -> add GitHub ..
+
+Now add the project in IntelliJ 
+
+version control -> create git repository.
+
+code will be in red colour 
+
+right click on project -> Git -> click on Add 
+
+now code will be in green colour
+
+now git -> commit and give comments
+
+now git -> push and give url for the repository
+
+---------------------------------------------------------------------------
+
+now go to GitHub and if you made any changes in that code here.
+
+then in IntelliJ right click on project 
+-> git -> pull..............................................
+
+
+
+
+
+
+ 
+
