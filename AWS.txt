@@ -62,11 +62,22 @@ available to store the data.
 - > lsblk (check the device) 
 
  -----------------------------------------------------------
-
 note-
 seven types of storage in aws.
 IOPs-  input output operation per second
 throughput - how much amount of data i can write it per second.
+
+What is a Snapshot in AWS?
+
+A Snapshot in AWS is basically a backup — a point-in-time copy of your EBS volume (your EC2’s storage disk).
+
+Think of it like taking a photo of your hard drive — so if anything goes wrong, you can restore your data from that photo later.
+
+🧠 Simple Analogy
+
+Imagine your EBS volume is your notebook 📒.
+When you take a snapshot, it’s like taking a photo of all the pages.
+If you lose the notebook (EBS volume), you can print a new one from the photo (snapshot).
 
 
 
