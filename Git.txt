@@ -312,3 +312,60 @@ do PR(pull request and merge to bug-fix)
 merge with branch bug-fix to big-fix-3456-login-error and commit..................
 
 -------------------------------------------------------------------------------------------------------------------------
+
+💬 1️⃣ “What is a merge conflict in Git?”
+
+Simple answer:
+
+A merge conflict happens when two branches change the same part of a file differently, and Git doesn’t know which version to keep.
+We must manually review and fix it before completing the merge.
+
+
+
+“Have you faced a merge conflict? What did you do?”
+--------------------------------------------------
+Real-life style answer:
+
+Yes, when two teammates and I updated the same config file, Git showed a merge conflict.
+I checked both versions, discussed with the team, kept the correct settings, and committed the resolved version.
+Then we made sure to pull the latest code before new changes to avoid it again.
+
+
+💬 3️⃣ “How do you resolve a merge conflict?”
+
+Answer:
+
+Git marks the conflicting parts with <<<<<<<, =======, and >>>>>>> in the file.
+
+I open the file, decide which code to keep (mine, theirs, or both),
+
+Then I run:
+
+git add <filename>
+git commit
+
+
+to mark it as resolved.
+
+✅ (Optional: you can say “I often use VS Code or GitHub Desktop to resolve conflicts easily.”)
+
+
+note 
+whatever changes in notepad 
+first 
+
+-> git add .
+-> git commit -m "meesaage"
+
+before doing a push ..
+first  -> git pull
+
+then remove the changes then again git add . ,  git commmit  then lastly -> git push
+
+
+................................................................................................................
+
+
+
+
+
