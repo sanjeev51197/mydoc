@@ -266,3 +266,49 @@ feature/* → for individual features
 hotfix/* → for urgent fixes
 This made collaboration smooth and reduced merge conflicts.”
 
+
+--------------------------------------------------------------------------------------------------------------------------
+
+practical use-
+
+first create a test repo -> 
+create a springboot javaproject -> extract the file and make folder and open git bash here.
+now 
+-> git init
+-> git add .
+-> git commit -m "First Commit"
+->git branch -M main
+->git remote add origin https://github.com/sanjeev51197/test.git   
+->git push -u origin main  
+
+after that your project will be moved to test repo........click and refresh and check.
+now to create branches 
+click on branch -> create new branch 
+bug-fix , feature ,r&d , hot-fix ,release 
+
+now go back to gitbash ---------------
+->git pull            (it will take all the changes) 
+now if user want to work on bug-fix branch ,
+first change the pwd from main to bug-fix
+
+->git switch bug-fix      
+
+-now user want to work on his personal bug-fix branch .
+then he will create his own sub branch of bug-fix
+
+->git branch bug-fix-3456-login-error         (it will create sub-branch but right now it is not showing in gitbranches)
+
+to work on sub-branch
+
+-> git switch bug-fix-3456-login-error
+
+now open ur project on notepad make some changes this changes will only reflect on sub-branch...
+to push the changes to github sub branches  ... 
+->git push --set-upstream origin bug-fix-3456-login-error
+
+now refresh sub-branch would have created open and 
+do PR(pull request and merge to bug-fix)  
+----------------------------------------
+merge with branch bug-fix to big-fix-3456-login-error and commit..................
+
+-------------------------------------------------------------------------------------------------------------------------
