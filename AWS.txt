@@ -80,14 +80,108 @@ When you take a snapshot, it’s like taking a photo of all the pages.
 If you lose the notebook (EBS volume), you can print a new one from the photo (snapshot).
 
 
+💬 1️⃣ What is a Load Balancer in AWS?
+--------------------------------------
+🗣️ Answer:
+
+A Load Balancer in AWS automatically distributes incoming traffic across multiple EC2 instances to ensure no single instance is overloaded.
+It helps with high availability, scalability, and fault tolerance.
+
+💡 (If you want to sound practical)
+
+For example, if I have 3 EC2 servers running my website, the Load Balancer will send users to whichever server is healthy and free.
 
 
 
+💬 3️⃣ What is a Target Group?
+--------------------------------
+🗣️ Answer:
+
+A Target Group is a set of EC2 instances or containers where the Load Balancer sends the traffic.
+It also performs health checks on targets to ensure only healthy ones receive requests.
+
+9️⃣ Real-life example question:
+
+🧑‍💼 “Suppose your website suddenly gets a lot of users, how will AWS handle it?”
+
+🗣️ Answer:
+
+I’ll put my EC2 instances behind an Application Load Balancer.
+It will automatically distribute traffic among all instances, and if one fails, traffic will move to healthy ones.
+We can also use Auto Scaling to launch more instances when traffic increases.
+
+
+steps to create Load Balancer
+--------------------------------
+
+create two instance and give user data......
+
+create target group..........
+
+make inbound traffic allow http 80port open
+
+add instances both in target group
+
+create load balancer ..
+ 
+copy the dns and check ..
+
+make sure s should not be thre in url
+
+keep http only not https....................
+
+------------------------------------------------------------------------------
 
 
 
+      **************AUTO SCALING*******************************
+
+AWS automatically add or remove servers based on traffic.
+That’s called Auto Scaling
+
+🧠 What is Auto Scaling in AWS?
+------------------------------------
+Definition (simple):
+
+Auto Scaling automatically increases or decreases the number of EC2 instances in your application based on demand.
+
+It ensures:
+✅ High availability (always enough instances)
+✅ Cost efficiency (no extra running servers when not needed)
+
+🧩 What is a Launch Template?
+-------------------------------
+Think of a Launch Template as a blueprint for creating EC2 instances.
+It tells AWS how each new instance should look.
+
+🧠 Example:
+
+When Auto Scaling wants to launch a new instance, it needs:
+
+AMI ID (your OS/image)
+
+Instance type (e.g., t2.micro)
+
+Key pair
+
+Security group
+
+User data script (optional)
+
+IAM role
+
+Instead of setting this manually each time, you save all of it in a Launch Template 💡
 
 
+...
+Steps to Create a AUTO SCALING
+
+firstly create a template that is blueprint of ec2 instance.
+go to autoscaling and create group..............
+
+-------------------------------------------------------------
+
+now to check if one ec2 instances goes down .. another automatically creates...
 
 
 
