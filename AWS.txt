@@ -224,3 +224,60 @@ and register now manage the rules -> add rules -> set the path -> query string k
 add priority 1
 
 ----------------------------------------------------------------------------------------------------------------
+
+
+            ************RDS******************************** 27.16 vdo
+
+RDS in AWS?
+🗣️ “RDS is a managed relational database service by AWS that supports multiple database engines like MySQL, PostgreSQL, and Oracle. It automates setup, backup, scaling, and maintenance so developers can focus on applications instead of managing databases.”
+
+1️⃣ Create RDS (MySQL example)
+
+Go to AWS Console → RDS → Create database
+
+Choose Standard Create
+
+Engine: MySQL
+
+Version: 8.0
+
+Templates: Free tier (if just learning)
+
+DB instance identifier: mydb
+
+Master username: admin
+
+Master password: admin12345
+
+Storage: 20 GB
+
+Connectivity:
+
+Choose your VPC
+
+Public access: Yes (for learning)
+
+Create new security group
+
+2️⃣ Edit Security Groups
+
+In your RDS security group, allow inbound:
+
+Type: MySQL/Aurora
+
+Port: 3306
+
+Source: EC2’s security group or 0.0.0.0/0 (for test only ⚠️)
+
+
+
+
+3️⃣ Connect to Database
+-----------------------
+Spring Boot application.properties:
+
+spring.datasource.url=jdbc:mysql://<rds-endpoint>:3306/mydb
+spring.datasource.username=admin
+spring.datasource.password=admin12345
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
