@@ -183,5 +183,44 @@ go to autoscaling and create group..............
 
 now to check if one ec2 instances goes down .. another automatically creates...
 
+-----------------------------------------------------------------
+
+USER DATA-----
+------------------
+
+#!/bin/bash
+# Update packages
+sudo yum update -y
+
+# Install Apache (httpd)
+sudo yum install -y httpd
+
+# Enable Apache to start on boot
+sudo systemctl enable httpd
+
+# Start Apache service
+sudo systemctl start httpd
+
+# Create a simple HTML page
+echo "<html><body><h1>Welcome to my static Website!</h1></body></html>" | sudo tee /var/www/html/index.html
 
 
+COPY AND PASTE WHILE LAUNCHING INSTANCE--
+
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+Routing..........................via rule
+
+practical 
+
+create two instance flight 1 and  flight 2 
+create hotel 1 and hotel 2 andd addthe user data too..
+
+create 2 target group   -  flight   
+                        -  hotel
+create a load balancer name mmt(makemytrip) 
+add the target group 
+and register now manage the rules -> add rules -> set the path -> query string key type value hotel or flight 
+add priority 1
+
+----------------------------------------------------------------------------------------------------------------
