@@ -399,3 +399,58 @@ you need to collaborate .
 open project -> setting-> collaborator -> add people -> give invite code.
 
 
+
+-------------------------------------------------------------------------------------------------------------------------------------------------
+
+“What’s the difference between git pull and git fetch?”
+
+You can answer:
+
+"git fetch only downloads changes from the remote but doesn’t modify my local branches,    
+
+->git fetch
+->git merge
+
+
+ while git pull fetches and then automatically merges them into my current branch."
+
+->git pull 
+
+
+
+
+🧠 What is git stash?
+-----------------------------------------------------------------------------------------
+👉 git stash temporarily saves your uncommitted changes (both modified and staged files)
+so that you can switch branches or pull new changes safely — without committing.
+
+It’s like putting your unfinished work in a drawer 🗄️, working on something else,
+and then taking it back out when you’re ready.
+
+----------------------------------------------------------------
+Imagine you’re writing notes ✍️ on paper (your code changes),
+but suddenly your teacher says, “Switch to another topic!” (checkout another branch).
+
+You:
+
+Put your notes in a drawer (git stash)
+
+Work on the new topic
+
+Later, take your notes out and continue (git stash pop)   -> git stash apply    enter    to get the previoud work 
+                                                         -> git add .
+                                                          -> git commit -m "m"
+                                                          -> git push
+
+
+🧠 What is git cherry-pick?
+-------------------------------------------------------------------
+👉 git cherry-pick lets you take a specific commit from one branch
+and apply it onto another branch, without merging the whole branch.
+
+Think of it like:
+“You pick one cherry 🍒 (commit) from a tree (branch) and put it in your basket (current branch).”
+
+INTERVIEW QUESTION->
+you have done today 5 commits, but you want to merge only 3rd commit to particular branch ,how will you do ?
+Answer: git cherrypic
