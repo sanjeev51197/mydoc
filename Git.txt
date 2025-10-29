@@ -363,9 +363,39 @@ first  -> git pull
 then remove the changes then again git add . ,  git commmit  then lastly -> git push
 
 
+
+RESET -------------------------------SOFT  /  HARD
 ................................................................................................................
 
+How do you undo local commit in working tree......
+
+using
+->git reset --SOFT~1    it will uncommit the file..unstage it..
 
 
+but using
+-> git reset --HARD~1            it will uncommit the file..unstage it..plus remove the file from local working tree
+
+
+IN GITHUB
+---------
+suppose you have pushed a file that uh dont want.
+
+so in order to undo 
+
+-> git revert 59ae0a1                     paste the commit id here and enter
+
+to save the changes
+
+type   esc :wq enter
+
+after that dont forget to do a  -> git push
+
+----------------------------------------------------------------------------------------------------------------------
+git forge.
+if you want anyone to work on your github code..
+you need to collaborate .
+
+open project -> setting-> collaborator -> add people -> give invite code.
 
 
