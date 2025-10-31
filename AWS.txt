@@ -281,3 +281,62 @@ spring.datasource.username=admin
 spring.datasource.password=admin12345
 spring.jpa.hibernate.ddl-auto=update
 spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
+
+
+-----------------------------------------------------------------------------------------------------------------------------
+
+                          < ------- ------- S3 ------------------------------ ->
+Q1. What is Amazon S3?
+➡️ “Amazon S3 is an object storage service that lets you store and retrieve any amount of data from anywhere on the internet. It’s highly durable, scalable, and secure.”
+
+
+advantage ->
+1.we can upload the file
+2.We can host the static website.     
+how you host static website ->
+ steps ->
+created two web pages 
+   index.html  this will run first when we paste the url
+   error.htlm  if something goes wrong in url .this will run
+
+create a bucket with unique name
+enable ACL
+untick the publick bucket access 
+bucket created .
+now upload the both files in the bucket.
+now go to bucket ->properties->host static website ->edit->first website name ->second website name-> done.
+now scroll now you will get the url. 
+
+------------------------------------------------------------------------------------------------------------
+
+What are storage classes in S3?
+➡️ “S3 has different storage classes depending on cost and access frequency.”
+
+Storage Class	Use Case
+Standard	Frequently accessed data
+Standard-IA	Infrequently accessed
+One Zone-IA	Infrequently accessed, one availability zone
+Glacier	Archival, long-term storage
+Glacier Deep Archive	Cheapest, long-term archive
+
+Q8. What’s the difference between S3 and EBS?
+--------------------------------------------
+Feature	S3	EBS
+Type	Object storage	Block storage
+Access	Over internet	Attached to EC2
+Use case	Backups, media, static websites	Boot volumes, databases
+
+
+Q9. How can you make S3 cost-effective?
+➡️ “By using lifecycle rules to move old files to Glacier or delete unused versions automatically.”
+
+Q10. What happens when you delete a versioned object?
+➡️ “A delete marker is added, and older versions can still be restored.”
+
+Q5. What is S3 versioning?
+➡️ “It keeps multiple versions of an object in the same bucket — useful for recovering accidentally deleted or overwritten data.”
+
+Q4. How is data secured in S3?
+➡️ “Using IAM policies, bucket policies, ACLs, encryption (SSE-S3, SSE-KMS), and versioning for data protection.”
+
+
