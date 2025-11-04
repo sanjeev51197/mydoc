@@ -641,3 +641,114 @@ create instance -> action ->secuirty -> attach iam rule-> add policy ...........
 
 
 =========================================================================================================
+
+
+                ******************AWS CLI -command line Interface***********
+
+Download and Install CLI from aws ..
+go to command check
+
+aws --version
+
+--------------------------
+check the command line command documentation -> command reference
+EXAMPLES------------------->
+
+S3
+-----------
+mb    ->   it creates a bucket     
+examle ->    aws s3 mb://mybucket
+rb -> it removes the bucket
+
+Confgure aws account from aws cli
+-------------------------------------
+->aws configure
+->access key
+->secret key
+->region -> ap-south-1
+->output-> json
+-----------------------------------------------------------------------
+
+first thing we have created the s3 bucket..
+-> aws s3 mb s3://psa-1998       -enter
+
+to list the all bucket
+-> aws s3 ls                   -enter
+
+
+---------------------------------------
+if want to upload a file-
+============================
+copy the path User and open in run..
+make a test1.txt file or anything.
+
+->aws s3 cp test1.txt s3://psa-1998                  -enter
+
+now if you want to delete the file..
+-----------------------------------
+-> aws s3 rm s3://psa-1998/test1.txt           enter
+
+if you want to remove the bucket
+================================
+
+->aws s3 rb s3://psa-1998
+
+
+ EC2                                 #To create an Instance
+=========================================================
+first create a key-pair
+->aws ec2 create-key-pair --key-name test5 > test5.pem
+
+
+now we need AMI image id and instance type
+go to console and copy the ami-id right side corner
+
+->aws ec2 run-instances --image-id ami-01760eea5c574eb86 --instance-type t3.micro  --key-name test5
+
+
+#TO STOP THE INSTANCE-
+=======================
+aws ec2 stop-instances --instance-ids i-0f33e9a064c2833ff                   -enter
+
+▶️ To Start Again
+-----------------------
+aws ec2 start-instances --instance-ids i-0f33e9a064c2833ff
+
+❌ To Terminate (delete permanently)
+-------------------------------------------
+aws ec2 terminate-instances --instance-ids i-0f33e9a064c2833ff
+
+🧩 1️ Basic — List All Instances
+---------------------------------
+aws ec2 describe-instances
+
+#DETAILS OF ALL INSTANCES WITH ID AND STATE
+---------------------------------------------
+aws ec2 describe-instances --query "Reservations[*].Instances[*].[InstanceId,State.Name]" --output table                  ENTER
+
+---------------------------------
+|      DescribeInstances        |
++----------------------+---------+
+|  i-0f33e9a064c2833ff | stopped |
+|  i-09b92cfe123456789 | running |
++----------------------+---------+
+
+
+#how to get inwhich region you are working-
+->aws configure get region
+
+
+☁️ Create MySQL Database in Amazon RDS using AWS CLI
+=========================================================
+🧩 Step 1: Check RDS CLI Availability   TO CHECK IF THERE IS RDS AVAILABLE OR NOT
+
+->aws rds describe-db-instances
+
+
+Create the MySQL RDS Instance
+------------------------------
+->aws rds create-db-instance --db-instance-identifier my-mysql-db --db-instance-class db.t3.micro --engine mysql --master-username admin --master-user-password MyPassword123 --allocated-storage 10 --db-name mydatabase --no-publicly-accessible                              enter
+
+#Delete RDS MySQL Instance
+==========================
+aws rds delete-db-instance --db-instance-identifier my-mysql-db --skip-final-snapshot
