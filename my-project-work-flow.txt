@@ -1,0 +1,383 @@
+*DOCTOR APPOINTMENT BOOKING*
+----------------------------
+
+
+(First day)---------------------------------->>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+1.created spring starter web project  
+
+added  dependency firstly 
+
+spring web
+MySQL 
+spring data jpa
+Eureka Discovery Client (port no 9761)
+
+
+2.Opened File in IntelliJ
+
+3.Created basic Package 
+                      
+                      1.Entity    ->
+                                   
+                                    a.Doctor
+                                    b.State   (Mapped ManyToOne and added join column
+                                              in Doctor and made a foregin Key because
+                                               many doctor belongs to one State)
+
+                                    c.City (same mapping) 
+                                    d.Area (same mapping)
+
+
+                      2.Repository  ->
+                                               a. DoctorRepositroy (added the @Query to find the doctor based
+                                                                    on city or specialization)
+                                               b. StateRepository
+                                               c. AreaRepository
+                                               d. CityRepository
+                      3.Service
+                      4.controller
+
+4.Added MySQL properties Jpa Properties Hibernate Properties in Application.properties file.. add server.port=8081
+5.Run the main class and table has created in local database.
+
+
+
+                                            2nd Day
+                                   -----------------------------
+
+Search Operation for the Doctor..
+----------------------------------
+1.manually open the database 
+and add 3-4 data the details in all the table   and in URL section gave dummy url right now.. click apply .
+
+now search should be based on City and area both .
+add city and area both query to find in Doctor Repository.
+
+2.Create a SearchController in controller package. and added @RestController and @RequestMapping("/api/v1/doctor")
+
+   @GetMapping("/search")
+3. added ResponseEntity that will give List of doctors. and added @RequestParam String specialization 
+                                                                 @RequestParam String area
+
+4. Autowired the DoctorRepository.
+
+search
+//http://localhost:8080/api/v1/doctor/search?specialization=cardiologist&areaName=BTM
+
+
+=================================================================================================================================== 
+
+
+2nd MicroService (Patient) 
+Now Patient will Search the Doctor and he'll do the Booking..
+
+--------------------------------------------------------------------
+
+1.Create Spring starter web Project 
+                                   
+                                   group - com.patient-service
+                                   artifactid - patient-service
+                                   Name- patient-service
+                                   package- com.patient-service..
+
+2. package            1.Entity    ->
+                                   
+                                    a.Patient
+                                    b.State   (Mapped ManyToOne and added join column
+                                              in Patient and made a foregin Key because
+                                               many Pateint belongs to one State)
+
+                                    c.City (same mapping) 
+                                    d.Area (same mapping)
+
+
+                      2.Repository  ->
+                                               a. PatientRepositroy                                                                  
+                    
+                      3.service
+                      4.controller
+                      5.exception
+
+
+
+
+notes
+----
+Relation between doctor and appointment schedule  -> one doctor can have appointment on many date.
+
+and One Date can have multiple time slots.......   
+
+Relationship tree
+------------------------------------------                  
+           Doctor
+                  |
+                   ---DoctorAppointmentSchedule(date) 
+                              |
+                               ------TimeSlots(time)
+
+we have done bidirectional mapping that everyone knows eachother.........
+
+to stop the recursive action to avoid unlimited details ..
+we ll use jsonbackreference and jsonmanagereference
+
+to search for the Doctor based on dates and times we will build
+
+in Doctor-service entity package
+                              1.DoctorAppointmentSchedule  class   this will have LocalDate date;
+                              2.TimeSlots  class   this will have LocalTime time;
+
+
+The Patient will search the doctor he'll sign up
+for that we build patient service microservice ...........
+we added the port no 8082 and another patient_db we created..
+
+Now the logic is 
+
+               One doctor will have many patient 
+               and one patient will have manydoctors.       manytomany relation..
+
+
+but we are using microservice so we can easily avoid this conflicts ..by using appointment-service
+
+Now we are using sql join to obtain the matching records from the doctor , doctorappointmentschedule and timeslots..
+Inner join we'll use the which will give matching records from both the table;
+
+so when we do bidirectional mapping whichever table that they know it will fetch all the details.
+
+http://localhost:8081/api/v1/doctor/search?specialization=cardiologist&areaName=BTM
+
+[
+  {
+    "id": 1,
+    "name": "sujith",
+    "specialization": "Cardiologist",
+    "qualification": "MBBS",
+    "contact": "9883290711",
+    "experiance": "11",
+    "url": "http://xyz.com",
+    "address": "No. 6, 100 feet road",
+    "state": {
+      "id": 1,
+      "name": "Karnataka"
+    },
+    "city": {
+      "id": 1,
+      "name": "Bengaluru"
+    },
+    "area": {
+      "id": 1,
+      "name": "BTM"
+    },
+    "appointmentSchedules": [
+      {
+        "id": 1,
+        "date": "2025-10-30",
+        "timeSlots": [
+          {
+            "id": 1,
+            "time": "11:00:00"
+          },
+          {
+            "id": 2,
+            "time": "11:30:00"
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "date": "2025-10-31",
+        "timeSlots": []
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "name": "ajay",
+    "specialization": "Cardiologist",
+    "qualification": "MBBS",
+    "contact": "96289009415",
+    "experiance": "15",
+    "url": "http://abc.com",
+    "address": "No.272, 100 feet road",
+    "state": {
+      "id": 1,
+      "name": "Karnataka"
+    },
+    "city": {
+      "id": 1,
+      "name": "Bengaluru"
+    },
+    "area": {
+      "id": 1,
+      "name": "BTM"
+    },
+    "appointmentSchedules": [
+      {
+        "id": 3,
+        "date": "2025-10-31",
+        "timeSlots": [
+          {
+            "id": 3,
+            "time": "12:30:00"
+          }
+        ]
+      }
+    ]
+  }
+]  output looks like this..................................................
+
+
+===========================================================================================================================
+
+Day-3 
+
+Applied current and future date concept in search Controller .
+--------------------------------------------------------------
+by using LocalTime .
+isEqual()  method =current time
+iAfter()  = future time
+isBefore()= previous time.
+
+because patient will search only the future or current time..................
+
+
+Day-4
+-----------------------------------------------------------------------------------------------------------------------                     
+-----------------------------------------------------------------------------------------------------------------------
+
+
+now added eureka  microservice with dependency added eureka discovery.
+
+now in application.properties added
+server.port=8761
+eureka.client.register-with-eureka=false
+eureka.client.fetch-registry=false
+
+
+now in main application of eureka 
+added
+@EnableEurekaServer
+
+and run the Eureka Application.
+after running started doctor-service and patient-service application to add in Eureka Server.
+
+
+Now .............
+
+created booking-service microservice 
+added dependencies-
+                   openFiegn  - to intercommunicate between the patientservice to doctor service and payment gateway.
+                   EurekaDiscoveryClient
+                   spring web
+                   spring data jpa
+                   spring Boot dev tools
+                   MySQL Driver
+
+
+EnabledDiscoveryClient to add the service with Eureka
+
+now in doctor-service 
+
+in searchController
+
+create a method to get the doctor details.. it will directly return doctor details not in response or json.
+
+//http://localhost:8080/api/v1/doctor/getdoctorbyid?id=1
+getMapping("/getdoctorid) ..................
+
+
+now from bookingcontroller i will call the method .
+for that we need to @Enableopenfiegnclient in booking-service application.
+
+feign client is  used to call one microservice from another microservice..
+
+now created doctorfiegnclient interface
+
+@FeignClient(name = "doctor-service",url = "http://localhost:8081/api/v1/doctor")
+public interface DoctorClient {
+      
+        @GetMapping("/getdoctorbyid")
+        Doctor getDoctorById(@RequestParam long id);             this is the same method where you created in Doctor-Service in controller.
+
+}
+
+created Doctor dto in dto pacage and added all the information simply copy pasted and removed unwanted annotation...
+
+here Doctor is the Dto of dto pacage.
+
+
+now from BookingController created a method to getthedoctorbyid
+
+       @Autowired
+       private DoctorClient doctorClient;
+
+    //http://localhost:8085/api/v1/booking/getdoctor?id=1
+            @GetMapping("/getdoctor")
+            public Doctor getDoctorById(@RequestParam long id)
+            {
+                return doctorClient.getDoctorById(1);
+            }
+
+start all your service first and run..
+
+..........................................................
+                   
+5th Day
+===========================================================================================================================
+in Booking controller
+
+in every doctor details one book button will be there. 
+now suppose. moment you click on booking button then two things will go to the backend.
+1.doctorid
+2.patientid
+
+we need actual doctor from database that why we have changed the parameter to actual doctorId.
+
+now we have added @RequestParam long patientId in the getdoctorbyid method ..
+and also  changed the getmapping url and added &patientId=1
+
+.............................................................................................................
+Now we need to create a PatientController class
+and get the patientbyid details object directly...
+
+ @GetMapping("/getpatientbyid)
+        public Patient getPatientById(@Requestparam long id)
+        {
+            return patientRepository.findById(id).get();
+        }
+            
+
+after getting the patientobject.
+we have bulid a patientclient interface in our booking-service annotated with @FeignClients(name="patient-service",url="with patient service port) 
+
+
+ @GetMapping("/getpatientbyid")
+    public Patient getPatientById(@RequestParam long id);
+
+
+now we require patientDto. because whatever response we get .we have to store somewhere.
+created dto package and just copied the entity of patient from patient-service to dto of booking-service.
+
+and removed all the annotations.
+and imports.
+
+after that in bookingcontroller. when clicking on book button both doctor and patient details required so 
+for now we are returning the value in String.
+stored both doctor in d var 
+and patient in p var.
+
+started and running all the services.
+
+
+=======================================================================================================================================
+
+Day -6 
+=========================================================================================================================================
+
+
+
+
+
+
