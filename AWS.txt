@@ -281,3 +281,474 @@ spring.datasource.username=admin
 spring.datasource.password=admin12345
 spring.jpa.hibernate.ddl-auto=update
 spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
+
+
+-----------------------------------------------------------------------------------------------------------------------------
+
+                          < ------- ------- S3 ------------------------------ ->
+Q1. What is Amazon S3?
+➡️ “Amazon S3 is an object storage service that lets you store and retrieve any amount of data from anywhere on the internet. It’s highly durable, scalable, and secure.”
+
+
+advantage ->
+1.we can upload the file
+2.We can host the static website.     
+how you host static website ->
+ steps ->
+created two web pages 
+   index.html  this will run first when we paste the url
+   error.htlm  if something goes wrong in url .this will run
+
+create a bucket with unique name
+enable ACL
+untick the publick bucket access 
+bucket created .
+now upload the both files in the bucket.
+now go to bucket ->properties->host static website ->edit->first website name ->second website name-> done.
+now scroll now you will get the url. 
+
+------------------------------------------------------------------------------------------------------------
+
+What are storage classes in S3?
+➡️ “S3 has different storage classes depending on cost and access frequency.”
+
+Storage Class	Use Case
+Standard	Frequently accessed data
+Standard-IA	Infrequently accessed
+One Zone-IA	Infrequently accessed, one availability zone
+Glacier	Archival, long-term storage
+Glacier Deep Archive	Cheapest, long-term archive
+
+Q8. What’s the difference between S3 and EBS?
+--------------------------------------------
+Feature	S3	EBS
+Type	Object storage	Block storage
+Access	Over internet	Attached to EC2
+Use case	Backups, media, static websites	Boot volumes, databases
+
+
+Q9. How can you make S3 cost-effective?
+➡️ “By using lifecycle rules to move old files to Glacier or delete unused versions automatically.”
+
+Q10. What happens when you delete a versioned object?
+➡️ “A delete marker is added, and older versions can still be restored.”
+
+Q5. What is S3 versioning?
+➡️ “It keeps multiple versions of an object in the same bucket — useful for recovering accidentally deleted or overwritten data.”
+
+Q4. How is data secured in S3?
+➡️ “Using IAM policies, bucket policies, ACLs, encryption (SSE-S3, SSE-KMS), and versioning for data protection.”
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+⚡ What is S3 Transfer Acceleration?
+
+S3 Transfer Acceleration (TA) makes uploads and downloads to S3 faster, especially when your users are far away from the S3 bucket’s region.
+
+It does this by using Amazon CloudFront’s global edge network.
+
+
+
+💨 How it works:
+------------------------------------------------------------
+When you enable Transfer Acceleration on your S3 bucket,
+AWS creates a special accelerated endpoint:
+
+https://<bucket-name>.s3-accelerate.amazonaws.com
+
+
+When you upload a file to that endpoint,
+your data is sent to the nearest AWS edge location (like Mumbai, London, Tokyo...).
+
+Then AWS’s optimized internal network carries it the rest of the way to your bucket’s region — super fast! 🚀
+
+
+🧪 When to Use It
+===========================================================================================================
+✅ Use it when:
+
+You have global users uploading to a central bucket.
+
+Files are large (videos, backups, etc.).
+
+You want faster uploads/downloads from distant locations.
+
+🚫 Don’t use it when:
+===========================================================================================
+All your users are near the same region as your S3 bucket (won’t help much).
+
+You want to save cost (it’s slightly more expensive).
+
+
+💬 Interview-Ready Answer
+
+Q: What is S3 Transfer Acceleration?
+A: S3 Transfer Acceleration uses Amazon CloudFront’s globally distributed edge locations to speed up uploads and downloads to S3. Instead of sending data directly to the S3 region, data first goes to the nearest edge location and then travels through AWS’s high-speed private network to the S3 bucket. It’s useful for large files or users far from the bucket’s region.
+
+🧠 Bonus: How to Enable It
+
+Go to your S3 bucket → Properties → Transfer Acceleration.
+
+Click Enable.
+
+Use the new endpoint:
+https://<bucket-name>.s3-accelerate.amazonaws.com
+===========================================================================================================================================================
+
+
+
+                           ************************** MFA ***********************************************************
+
+
+
+🧠 What is MFA?
+
+MFA (Multi-Factor Authentication) means using two different types of security checks to log in.
+AWS uses this to add an extra layer of protection to your account.
+
+
+🧱 Types of MFA in AWS:
+-------------------------
+| Type                                     | Description                           | Example                                         |
+| ---------------------------------------- | ------------------------------------- | ----------------------------------------------- |
+| **Virtual MFA device**                   | Uses an app on your phone             | Google Authenticator, Authy, or AWS Virtual MFA |
+| **Hardware MFA device**                  | Physical device that generates a code | YubiKey, Gemalto token                          |
+| **U2F security key**                     | USB device that you plug in           | YubiKey, Titan key                              |
+| **SMS-based MFA** *(for IAM users only)* | Code sent via text message            | AWS sends OTP to your mobile                    |
+
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+               ********************************   IAM    *************************************
+
+
+🧠 What is IAM?
+---------------------
+IAM (Identity and Access Management) is a service in AWS that helps you securely control access to AWS resources.
+
+👉 It decides who can access what and how they can access it.
+
+💬 Simple Definition:
+
+IAM allows you to create and manage users, groups, roles, and policies to control permissions in your AWS environment.
+
+
+🧱 IAM Components (Like Lego Pieces)
+------------------------------------
+| Component     | Meaning                                                 | Example                               |
+| ------------- | ------------------------------------------------------- | ------------------------------------- |
+| 👤 **User**   | A person or application that logs in to AWS             | A developer named “Rohan”             |
+
+| 👥 **Group**  | A collection of users with same permissions             | “Developers” group with EC2 access    |
+
+| 🎭 **Role**   | Temporary permissions assigned to AWS services or users | EC2 role that allows access to S3     |
+
+| 📜 **Policy** | A document that defines permissions (in JSON)           | “Allow user to read/write S3 buckets” |
+
+
+🔐 What are Access Key and Secret Key?,
+---------------------------------------
+| Key                   | Description                                                                            |
+| --------------------- | -------------------------------------------------------------------------------------- |
+| **Access Key ID**     | A public identifier for the IAM user (like a username)                                 |
+| **Secret Access Key** | A private key used to **sign** API requests (like a password — should never be shared) |
+
+👉 These two together allow your app, script, or CLI to authenticate and make requests to AWS (like listing S3 buckets, launching EC2, etc.)
+
+
+You go to:
+AWS Console → IAM → Users → developer → Security credentials → Create access key
+
+You’ll get:
+Access Key ID: AKIAIOSFODNN7EXAMPLE
+Secret Access Key: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+
+-----------------------------------------------------------------------------------------------------------------------
+
+⚠️ Important Best Practices (Interview + Real Life)
+========================================================
+| Practice                       | Why                                                                |
+| ------------------------------ | ------------------------------------------------------------------ |
+| ❌ Don’t use Root user keys     | Too risky, has full control                                        |
+| 🔑 Use IAM user or Role        | Safer and least privilege                                          |
+| 🔄 Rotate keys regularly       | Prevents long-term exposure                                        |
+| 🚫 Don’t hardcode keys in code | Use environment variables or IAM roles                             |
+| 🧰 Use IAM Role for EC2/Lambda | They automatically get temporary keys (no need to manage manually) |
+
+
+note
+-----------
+We can login in aws via Console 
+and also 
+via CLI or terraform through by programmatically using key ...........
+
+
+“Can an IAM Role belong to a Group?”
+👉 No.
+Groups are only for users. Roles are assumed, not assigned like users.
+
+IAM Group: Used to manage permissions for multiple IAM users collectively.
+IAM Role: Used to grant temporary permissions to users, services, or applications — often assumed by AWS resources like EC2, Lambda, etc.
+
+
+⚙️ Roles Example:
+
+You have an EC2 instance running your doctor-service backend.
+
+It needs to read and write to an S3 bucket for uploading medical reports.
+
+Instead of giving it permanent Access Keys, you:
+
+Create an IAM Role → give it permission to access S3.
+
+Attach that Role to the EC2 instance.
+
+Now the EC2 instance automatically gets temporary credentials to talk to S3 safely.
+
+✅ No manual key handling
+✅ Safer and easier for automation
+
+
+
+☁️ What is an IAM Policy?
+-------------------------------
+An IAM Policy is a JSON document that defines permissions —
+it says who can do what actions on which resources
+
+
+⚙️ Types of IAM Policies
+------------------------
+| Type                        | Description                              | Example                                         |
+| --------------------------- | ---------------------------------------- | ----------------------------------------------- |
+| **AWS Managed Policy**      | Predefined by AWS                        | `AmazonS3FullAccess`, `AmazonEC2ReadOnlyAccess` |
+| **Customer Managed Policy** | You create your own                      | Custom rules like “Allow EC2 start only”        |
+| **Inline Policy**           | Directly attached to one user/group/role | Policy written inside the user or role          |
+
+
+💬 Common Interview Questions
+=================================
+Q1: What is an IAM policy?
+
+A JSON document that defines permissions for AWS resources.
+
+Q2: What’s the difference between managed and inline policies?
+
+Managed: reusable, can attach to many users.
+Inline: unique, attached to one entity only.
+
+Q3: What happens if there’s both Allow and Deny?
+
+Deny always wins.
+
+
+
+🧠 Short Answer Table (for quick recall)
+--------------------------------------------
+
+👩‍💻 1️⃣ When do we create a User?
+🧩 Think of it as: “A human or app needs an AWS identity.”
+
+You create an IAM User when:
+
+A developer, tester, or admin needs to log in to the AWS Console.
+
+A local application or script needs to call AWS services using Access/Secret Keys.
+
+💡 Example:
+Your DevOps engineer needs to manage EC2 servers.
+→ Create an IAM user: devops_engineer
+→ Give them necessary permissions (directly or via a group).
+
+⚠️ Don’t use Root user for daily work — always create separate IAM users.
+
+👥 2️⃣ When do we create a Group?
+🧩 Think of it as: “Many users share the same kind of work.”
+
+You create an IAM Group when:
+
+Multiple users need same permissions.
+
+You want to manage permissions centrally — attach one policy to the group, and all users inside inherit it.
+
+💡 Example:
+You have 10 backend developers.
+→ Create group: BackendDevelopers
+→ Attach policy: Allow EC2, RDS, CloudWatch.
+→ Add all 10 users to that group.
+
+✅ Easier management — if a new dev joins, just add them to the group.
+
+🧑‍🚀 3️⃣ When do we create a Role?
+🧩 Think of it as: “Temporary access for AWS services or external users.”
+
+You create a Role when:
+
+An AWS service (like EC2, Lambda, ECS) needs to access another AWS service.
+
+A third-party user (from another AWS account or SSO provider) needs temporary access.
+
+You want temporary credentials (no static access keys).
+
+💡 Examples:
+
+EC2 uploads doctor files to S3 → Create role EC2S3UploaderRole and attach to instance.
+
+Lambda function reads from DynamoDB → Create role LambdaDynamoDBReaderRole.
+
+✅ Secure, temporary credentials
+✅ No need to store keys in your code
+
+📜 4️⃣ When do we create a Policy?
+🧩 Think of it as: “Defining the rules.”
+
+You create a Policy when:
+
+You want to define custom permissions (Allow/Deny for specific services or resources).
+
+AWS’s built-in Managed Policies don’t fit your exact need.
+
+💡 Examples:
+
+Allow uploading only to one S3 bucket:
+Allow s3:PutObject on arn:aws:s3:::doctor-reports/*
+
+Deny deleting EC2 instances.
+
+Then attach this policy to:
+
+A User
+
+A Group
+
+Or a Role
+
+=====================================================================================================================
+
+HOW to create POLICY
+=========================
+
+IAM-> POLICY-> CREATE policy-> JSON-> CHOOSE SERVICE->ADD RESOURCE->CREATE BUCKET in S3-> ADD CONDITION-> 
+->REQUESTED-REGION->for ANY VALUE ->STRING EQUAL -> copy paste region 
+
+--------------------------------------
+
+how to attach the policy to ec2?
+
+==================================
+create instance -> action ->secuirty -> attach iam rule-> add policy ...............
+
+
+=========================================================================================================
+
+
+                ******************AWS CLI -command line Interface***********
+
+Download and Install CLI from aws ..
+go to command check
+
+aws --version
+
+--------------------------
+check the command line command documentation -> command reference
+EXAMPLES------------------->
+
+S3
+-----------
+mb    ->   it creates a bucket     
+examle ->    aws s3 mb://mybucket
+rb -> it removes the bucket
+
+Confgure aws account from aws cli
+-------------------------------------
+->aws configure
+->access key
+->secret key
+->region -> ap-south-1
+->output-> json
+-----------------------------------------------------------------------
+
+first thing we have created the s3 bucket..
+-> aws s3 mb s3://psa-1998       -enter
+
+to list the all bucket
+-> aws s3 ls                   -enter
+
+
+---------------------------------------
+if want to upload a file-
+============================
+copy the path User and open in run..
+make a test1.txt file or anything.
+
+->aws s3 cp test1.txt s3://psa-1998                  -enter
+
+now if you want to delete the file..
+-----------------------------------
+-> aws s3 rm s3://psa-1998/test1.txt           enter
+
+if you want to remove the bucket
+================================
+
+->aws s3 rb s3://psa-1998
+
+
+ EC2                                 #To create an Instance
+=========================================================
+first create a key-pair
+->aws ec2 create-key-pair --key-name test5 > test5.pem
+
+
+now we need AMI image id and instance type
+go to console and copy the ami-id right side corner
+
+->aws ec2 run-instances --image-id ami-01760eea5c574eb86 --instance-type t3.micro  --key-name test5
+
+
+#TO STOP THE INSTANCE-
+=======================
+aws ec2 stop-instances --instance-ids i-0f33e9a064c2833ff                   -enter
+
+▶️ To Start Again
+-----------------------
+aws ec2 start-instances --instance-ids i-0f33e9a064c2833ff
+
+❌ To Terminate (delete permanently)
+-------------------------------------------
+aws ec2 terminate-instances --instance-ids i-0f33e9a064c2833ff
+
+🧩 1️ Basic — List All Instances
+---------------------------------
+aws ec2 describe-instances
+
+#DETAILS OF ALL INSTANCES WITH ID AND STATE
+---------------------------------------------
+aws ec2 describe-instances --query "Reservations[*].Instances[*].[InstanceId,State.Name]" --output table                  ENTER
+
+---------------------------------
+|      DescribeInstances        |
++----------------------+---------+
+|  i-0f33e9a064c2833ff | stopped |
+|  i-09b92cfe123456789 | running |
++----------------------+---------+
+
+
+#how to get inwhich region you are working-
+->aws configure get region
+
+
+☁️ Create MySQL Database in Amazon RDS using AWS CLI
+=========================================================
+🧩 Step 1: Check RDS CLI Availability   TO CHECK IF THERE IS RDS AVAILABLE OR NOT
+
+->aws rds describe-db-instances
+
+
+Create the MySQL RDS Instance
+------------------------------
+->aws rds create-db-instance --db-instance-identifier my-mysql-db --db-instance-class db.t3.micro --engine mysql --master-username admin --master-user-password MyPassword123 --allocated-storage 10 --db-name mydatabase --no-publicly-accessible                              enter
+
+#Delete RDS MySQL Instance
+==========================
+aws rds delete-db-instance --db-instance-identifier my-mysql-db --skip-final-snapshot
