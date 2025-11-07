@@ -645,6 +645,9 @@ create instance -> action ->secuirty -> attach iam rule-> add policy ...........
 
                 ******************AWS CLI -command line Interface***********
 
+in bash -> we use Linux command
+in CLI -> we use AWS command
+
 Download and Install CLI from aws ..
 go to command check
 
@@ -752,3 +755,80 @@ Create the MySQL RDS Instance
 #Delete RDS MySQL Instance
 ==========================
 aws rds delete-db-instance --db-instance-identifier my-mysql-db --skip-final-snapshot
+
+//CLOUD WATCH
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Think of CloudWatch as a security camera + health monitor for your AWS services.
+
+It watches everything happening in your AWS account — your EC2, Lambda, RDS, API Gateway, etc.
+It collects metrics, logs, and events and helps you take action when something goes wrong.
+
+🎥 Simple Example (Like Kid)
+
+Imagine you run a hospital app on AWS:
+
+EC2 = doctor servers 🩺
+
+RDS = patient database 💊
+
+S3 = medical reports 🧾
+
+You can’t sit and watch all of them 24/7 😴.
+So you ask CloudWatch to watch them for you.
+
+CloudWatch tells you things like:
+
+EC2 CPU usage is 95% 😱
+
+Database storage is almost full ⚠️
+
+Lambda failed 10 times 🚨
+
+You can even make it send you alerts (alarms) when something is wrong.
+
+🧩 CloudWatch Components (Easy to Remember: M-L-A-D)
+=========================================================
+| Component         | What it Does                | Example                      |
+| ----------------- | --------------------------- | ---------------------------- |
+| **M = Metrics**   | Numbers CloudWatch collects | CPU %, memory, request count |
+| **L = Logs**      | Records of what happened    | App errors, API logs         |
+| **A = Alarms**    | Alerts based on metrics     | “Send SMS if CPU > 80%”      |
+| **D = Dashboard** | Visual graphs               | Show charts of EC2 CPU usage |
+
+Q1: What is AWS CloudWatch?
+🗣️ It’s a monitoring and observability service that collects metrics, logs, and events from AWS resources and applications.
+
+Q2: Difference between CloudWatch Metrics and Logs?
+🗣️ Metrics = numeric data (CPU %, memory)
+Logs = detailed text data (errors, events)
+
+Q3: What are CloudWatch Alarms?
+🗣️ Alarms watch metrics and trigger actions (like SNS notifications or auto-scaling).
+
+Q4: How is CloudWatch different from CloudTrail?
+🗣️ CloudWatch = monitors performance
+CloudTrail = monitors user activity / API calls
+
+Q5: Real-world use?
+🗣️ Example: monitor EC2 CPU usage, set alarms, and automatically scale using Auto Scaling.
+
+
+notes= pubs  means Publisher 
+subs = means Subscriber. 
+AFTER CREATING THE TOPIC ->CREATE SUBSCRIPTION (MEANS WHOM DO YOU WANT TO SEND THE NOTIFICATION).
+
+steps to get notification via email in your phone if your cpu uitilization is more than 5%
+
+create one or more instance -> sleect the instance ->action -> monitor cloud watch alarm-> set topic -> add details ->done
+
+now we gave exernal stress to ec2 to test the alarm
+for that we installed 
+sudo yum install stress -y
+
+ Apply Load Now--------->
+
+Once installed, test your CloudWatch alarm:
+
+stress --cpu 2 --timeout 300
+=====================================================================================================================================================
+
