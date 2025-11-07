@@ -1,0 +1,63 @@
+Apache Kafka
+___________
+
+-> It acts as mediator to exchange messages (Message Broker)
+-> Kafka is very useful for real time data exchange
+-> Publisher will publish the message and subscriber will consume the message
+
+It helps systems communicate by sending messages (events) between producers and consumers asynchronously.
+
+
+
+Kafka Setup for windows
+=========================
+1st download and exract apache zookeeper which provides the environment
+
+2nd download and extract apache kafka server 
+will be in g drive or c drive
+
+steps---------------
+
+open zookeeper -> Open bin folder -> copy the path location 
+->open environment variable ->selecty path-> edit -> paste the path.
+->ok->ok
+
+
+now open kafka ->open config folder->
+copy "zookeeper.properties" and "server.properties"
+now 
+back to kafka open bin -> open windows-> paste the file here............
+
+===========================================================================
+
+
+Start Zookeeper server -----------------
+
+now go to kafka ->bin->windows->cmd enter
+
+->zookeeper-server-start.bat zookeeper.properties      enter 
+
+
+now minimize and open again the commandterminal from same location
+->kafka-server-start.bat server.properties         enter
+
+
+now we need to create the kafka topic
+
+open cmd terminal from same windows
+
+kafka-topics.bat --create --topic test-topic --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1              enter
+
+
+kafka runs on the port -> 9092
+
+to view the created topic
+------------------------------
+
+command->
+kafka-topics.bat --list --bootstrap-server localhost:9092
+
+
+Kafka Bootstrap Server URL : http://localhost:9092/ 
+or http://192.30.43.2:9092/ for Linux server created in cloud
+
