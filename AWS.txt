@@ -832,3 +832,55 @@ Once installed, test your CloudWatch alarm:
 stress --cpu 2 --timeout 300
 =====================================================================================================================================================
 
+#ELASTIC BEAN STALK-
+=======================
+🧠 What is Elastic Beanstalk?
+
+Elastic Beanstalk (EB) is a Platform as a Service (PaaS) offered by AWS.
+It helps you deploy and manage your web applications easily — without worrying about setting up servers, load balancers, or scaling manually.
+
+Think of it like this:
+
+You write your app → Upload it to Elastic Beanstalk → AWS takes care of the rest. 🚀
+
+⚙️ What Elastic Beanstalk Does for You --  EVERYTHING WILL BE ADDED AUTOMATICALLY WE JUST NEED TO DEPLOY THE APPLICATION.
+----------------------------------------
+When you upload your app, Elastic Beanstalk automatically:
+
+IT CREATES COMPLETE infrastructure (EC2 instances,s3, Load Balancer, Security Groups, etc.)
+
+Deploys your code
+
+Monitors your app’s health
+
+Scales up/down based on traffic
+
+Handles load balancing
+
+Integrates with CloudWatch for logging and metrics
+
+=====================================================
+steps to deploy
+1.created spring starter web project having web dependencies.
+2.Open IAM shoul have IAM access key and Secret Key
+3.Go to role > create a role and add these policies ->a. AwsElasticBeanstalkMulticontainerDocker
+                                                     >b.  AwsElasticBeanstalkWebTier
+                                                     ->    AwsElasticBeanstalkWorkerTier
+
+why we are creating trole?
+->Elastic Beanstalk itself (and the EC2 instances it creates) need permission to interact with other AWS services we have to attach these policies.
+
+now -> go to ElatisBeanStalk->Create Application->give a name-> give a domain or else leave-> choose platform i.e java->  next ->add role-> next ->next ->next
+
+
+
+====================================================================================================================
+
+VPC
+=====================================================================
+
+
+
+
+
+
