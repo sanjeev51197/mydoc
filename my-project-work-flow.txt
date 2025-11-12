@@ -375,9 +375,108 @@ started and running all the services.
 
 Day -6 
 =========================================================================================================================================
+Create payment-service maven microservice and added 
+dependencies-> spring web 
+             ->  Eureka Discovery CLient
+              -> Stripe Dependency
+
+Stripe -We are using now for testing purpose
+=======
+Stripe is a payment gateway — a platform that lets you accept online payments safely and easily.
+It handles all the hard parts like:
+talking to banks and credit card networks,
+ensuring security and encryption,
+managing refunds, subscriptions, invoices, etc.
+
+Once we logged in to the account.
+->>>>>>>> Copy the Secret Key.
+
+Created Dto Package
+===================
+added        -> ProductRequest class     -  
+             -> StripeResponse class
+what is ProductRequest?
+ProductRequest is a Data Transfer Object (DTO) —
+a simple Java class that represents what data the API needs from the client when creating a Stripe checkout session.
+public class ProductRequest {
+    private Long amount;
+    private long quantity;
+    private String name;
+    private String currency;
+    // getters & setters
+}
+
+StripeResponse
+==============
+public class StripeResponse {
+
+    private String status;
+    private String message;
+    private String sessionId;
+    private String sessionUrl;
+}
+
+If ProductRequest is the input, then StripeResponse is the output.
+
+When you call your backend endpoint (like /create-checkout-session):
+You send a request with details (→ ProductRequest)
+The backend calls Stripe API
+Stripe sends back a response with info like payment URL, session ID, status, etc.
+Your backend then sends that info to the frontend (→ StripeResponse)
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Service Package
+==============
+create StripeService
+set the secretKey with adding @Value annotation. which takes the value from application.properties file where we set
+spring.application.name=payment-service
+server.port=5555
+stripe.secretKey=sk_test_**********************************8
+
+🔍 Step-by-step explanation
+============================
+| Step                         | What happens                                     | Example                               |
+| ---------------------------- | ------------------------------------------------ | ------------------------------------- |
+| **1️⃣ Set API Key**          | Stripe SDK needs your secret key to authenticate | `Stripe.apiKey = "sk_test_..."`       |
+| **2️⃣ Build Session Params** | You tell Stripe what the user is buying          | name, amount, currency                |
+| **3️⃣ Create Session**       | Stripe returns a secure payment page URL         | `https://checkout.stripe.com/pay/...` |
+| **4️⃣ Return Response**      | You wrap it in `StripeResponse` for frontend     | includes `sessionId` + `sessionUrl`   |
+
+the Service will create unique session for every payment req .
+when user will click on Checkout.. User get the option to make proceed with payment along with the productdetails.that we set.
+then the payment.Mode will come and it will get stored in params variable.  
+now when you are in paymentmode for that one session id will be created
+once you click on submit you get a paymentUrl with afterclickon it .. u get success msg after completion.
+
+-----------------------------------------------------------------------------------------------------------
+Created ProductCheckoutController
+---------------------------------
+@RestController
+@RequestMapping("/product/v1")
+public class ProductCheckoutController {
+
+    @Autowired
+    private StripeService stripeService;
+
+    @PostMapping("/checkout")
+    public ResponseEntity<StripeResponse> checkoutProducts(@RequestBody ProductRequest  productRequest)
+    {
+      StripeResponse stripeResponse=  stripeService.checkoutProducts(productRequest);
+       return ResponseEntity
+               .status(HttpStatus.OK)
+               .body(stripeResponse);
 
 
+    }
+}
+=================================================================================================================================
+after that use postman body
+{
+   "amount":50000,
+   "quantity":2,
+   "name":"nike shoes",
+   "currency":"USD"
 
+}
+you will get url click and add card details ..... 4242 4242 4242 4242   05/28 / 846      -> submit
 
-
-
+====================================================================================================================================
