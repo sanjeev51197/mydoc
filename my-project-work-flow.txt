@@ -480,3 +480,38 @@ after that use postman body
 you will get url click and add card details ..... 4242 4242 4242 4242   05/28 / 846      -> submit
 
 ====================================================================================================================================
+Day-7        -Updation of Booking Details if the payment is successful
+Payment Success Message. in Controller we are going to do.
+
+
+In Booking-service 
+created a BookingConfirmation class in entity package . and gave the details which i want after payment success.in page.
+
+Now in BookingController.
+   @GetMapping("/getdoctor")
+            public String getDoctorById(
+                    @RequestParam long doctorId,
+                    @RequestParam long patientId,
+                    @RequestParam LocalDate date,
+                    @RequestParam LocalTime time)
+
+comparing date and time and if availave then booking happens.
+we added if condition  using equals() to match the date and time.  
+ 
+List<DoctorAppointmentSchedule> appointmentSchedules = d.getAppointmentSchedules();
+        for (DoctorAppointmentSchedule app : appointmentSchedules) {
+            LocalDate localDate = app.getDate();
+            if (localDate.isEqual(date)) {
+                List<TimeSlots> timeSlots = app.getTimeSlots();
+                for (TimeSlots t : timeSlots) {
+                    if (timeSlots.equals(time)) {
+                        System.out.println("Complete Booking");
+                    }
+                }
+            }
+           
+        }
+
+========================================================
+
+
