@@ -965,4 +965,89 @@ In NFS you maintain server; in EFS AWS manages everything.
 3️⃣ What ports does NFS use?
 
 Linux NFSv4 uses TCP Port 2049.
+=====================================================================================
 
+⭐ 1) S3 – When to Use (Object Storage)
+
+Use when you need to store files, not disks.
+S3 is like Google Drive for your application.
+
+✅ Use Cases
+
+Static website hosting
+Store HTML, CSS, JS, images.
+
+Store images/videos/documents
+For mobile apps, websites, backend.
+
+Backup & Restore
+Database backups, logs, snapshots.
+
+Big data storage
+Input/output for analytics (Athena, EMR, Glue).
+
+File uploads in web apps
+User profile pics, resumes, pdfs.
+
+Media streaming
+Store and serve video/audio.
+
+Serverless apps
+Lambda reads/writes to S3.
+
+🎯 When to use S3?
+
+Use S3 when you want cheap storage, unlimited size, global availability
+— and don’t need to mount it like a disk.
+
+⭐ 2) EBS – When to Use (Block Storage / Disk for EC2)
+
+EBS = Hard Disk attached to EC2
+(single server storage)
+
+✅ Use Cases
+
+OS disk for EC2 instance
+Root volume.
+
+Databases on a single server
+MySQL, MongoDB, PostgreSQL.
+
+Applications needing low-latency disk read/write
+Like caches, indexing systems.
+
+File system that only one EC2 should use.
+
+High IOPS workloads
+Gaming servers, finance apps.
+
+🎯 When to use EBS?
+
+Use EBS when you need a fast disk for one EC2 instance.
+
+Not shareable across multiple servers.
+
+⭐ 3) EFS – When to Use (Shared File System)
+
+EFS = Shared folder accessible by many EC2 at the same time.
+
+✅ Use Cases
+
+Multiple servers sharing same files
+Example: EC2 Auto-Scaling group storing images/logs.
+
+Web applications needing shared uploads folder
+WordPress, PHP Laravel apps.
+
+Container orchestration
+ECS / EKS pods needing shared storage.
+
+Machine learning models
+Multiple training nodes reading same dataset.
+
+Microservices sharing configuration.
+
+🎯 When to use EFS?
+
+Use EFS when many EC2 instances must access the same files simultaneously
+and grow automatically.
