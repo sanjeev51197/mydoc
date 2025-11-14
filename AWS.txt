@@ -876,11 +876,93 @@ now -> go to ElatisBeanStalk->Create Application->give a name-> give a domain or
 
 ====================================================================================================================
 
-VPC
+EFS  Elastic File System And NFS
 =====================================================================
+Basically we will add efs in one ec2 instance i.e we wll add the file and make it availavle for other ec2 insances .. if one changes .the other can see and other changes first one can see..
+
+steps to do
+login with first vm1 using bash
+install efs client  ->sudo yum install -y nfs-utils
+                    ->sudo yum install -y amazon-efs-utils
+
+create a folder/directory -> mkdir dir
+create some file -> sudo touch A.txt B.txt C.txt
+do the mounting -> sudo mount -t efs -o tls fs-0bf11dcba035a2c22:/ dir
+                                             this is the id of efs 
+now open second window of gitbash login second vm
+install efs client  ->sudo yum install -y nfs-utils
+                    ->sudo yum install -y amazon-efs-utils
+    created a folder-> mkdir chotka
+   do the mounting -> sudo mount -t efs -o tls fs-0bf11dcba035a2c22:/ chotka  
+
+after that cd chotka                                cd dir
+sudo touch A.txt            ->                       it will reflect in vm-1 when you see ->ls -l
+ reflect in vm-2                             <---                       sudo touch B.txt
+both interact with each other
+1️⃣ What is EFS?
+
+Answer:
+EFS (Elastic File System) is a fully managed, scalable NFS file system that can be mounted on multiple EC2 instances simultaneously.
+
+3️⃣ How is EFS different from EBS?
+| EFS                         | EBS                           |
+| --------------------------- | ----------------------------- |
+| Shared between multiple EC2 | Attached to one EC2 at a time |
+| Auto scaling                | Fixed size                    |
+| NFS based                   | Block storage                 |
+| Multi-AZ                    | Single AZ                     |
+
+4️⃣ How is EFS different from S3?
+| EFS             | S3                          |
+| --------------- | --------------------------- |
+| File system     | Object storage              |
+| Mount using NFS | Access via API/HTTP         |
+| Low latency     | Higher latency              |
+| Use for servers | Use for static files/backup |
+
+9️⃣ How do you mount EFS to EC2? (Very important)
+
+Install NFS package:  this package is essential for mounting EFS file system on Amzon Linux. 
+
+sudo yum install -y nfs-utils
+
+
+Create mount folder:
+
+sudo mkdir /mnt/efs
+
+
+Mount EFS:
+
+sudo mount -t nfs4 <file-system-id>.efs.<region>.amazonaws.com:/ /mnt/efs
+
+
+🔟 What security does EFS use?
+
+Answer:
+Security Groups
+VPC
+Encryption at rest (KMS)
+Encryption in transit (TLS)
+POSIX permissions (chmod, chown)
 
 
 
+1️⃣ What is NFS?
 
+NFS is a protocol that allows files to be shared over a network.
 
+2️⃣ Difference between NFS and EFS?
+
+Answer:
+
+NFS = Protocol + Self-managed storage
+
+EFS = AWS-managed NFS storage
+
+In NFS you maintain server; in EFS AWS manages everything.
+
+3️⃣ What ports does NFS use?
+
+Linux NFSv4 uses TCP Port 2049.
 
