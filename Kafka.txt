@@ -8,6 +8,17 @@ ___________
 It helps systems communicate by sending messages (events) between producers and consumers asynchronously.
 
 
+Kafka Architecture:
+
+1. Zookeeper  - This provides environment to run kafka server
+2. Kafka Server  - This acts as message broker
+3. Kafka Topic - It is used to store and queue messages
+4. Publisher - This will push messages to kafkatopic
+5. Subscriber - This will fetch the message that is pushed to kafka by publisher
+
+
+
+
 
 Kafka Setup for windows
 =========================
@@ -60,4 +71,149 @@ kafka-topics.bat --list --bootstrap-server localhost:9092
 
 Kafka Bootstrap Server URL : http://localhost:9092/ 
 or http://192.30.43.2:9092/ for Linux server created in cloud
+
+
+
+===============================================================
+first build the Costumer App to interact with Kafka
+in order to interact with kafka configure the url 9092 in application.pro
+
+Createdcustomerapp Spring Starter Web Project and added the dependencies
+
+Spring web
+Kafka
+
+
+----------------------------------------------------------------
+kafka to get connected with my springboot project
+we need to create a KafkaConfig class
+
+first created AppConstants
+to keep the port no or url in future.
+
+now Created Entity class Order .
+
+create KafkaConfig class
+
+
+now understand 
+
+
+
+we'll give the data in JSON format to customerapp and customerapp converts the data to java Object this java object is now went to KafkaTopic through bytecode Using JsonSerializer..
+
+
+       CUSTOMERAPP ------->  Kafka Topic ----------> HOTELAPP
+
+
+
+@Configuration
+public class KafkaConfig {
+
+    @Bean
+    public ProducerFactory<String, Order> producerFactory() {
+        Map<String, Object> kafkaProps = new HashMap<>();
+
+        kafkaProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, AppConstants.KAFKA_HOST);
+        kafkaProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        kafkaProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+
+        return new DefaultKafkaProducerFactory<>(kafkaProps);
+    }
+
+    @Bean
+    public KafkaTemplate<String, Order> kafkaTemplate() {
+        return new KafkaTemplate<>(producerFactory());
+    }
+}
+
+
+
+🧩 Step-by-Step Explanation
+1️⃣ @Configuration
+
+Marks this class as a Spring configuration class.
+
+It tells Spring: “this class will define beans that should go into the application context.”
+
+📘 Think of it like a setup file for Kafka inside Spring Boot.
+
+2️⃣ @Bean public ProducerFactory<String, Order> producerFactory()
+
+This creates a ProducerFactory bean,
+
+Inside it:
+
+Map<String, Object> kafkaProps = new HashMap<>();
+
+
+This Map holds Kafka configuration properties.
+
+Let’s go line by line 👇
+
+🧱 ProducerConfig.BOOTSTRAP_SERVERS_CONFIG
+kafkaProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, AppConstants.KAFKA_HOST);
+
+
+Defines where your Kafka broker lives.
+
+Example: "localhost:9092"
+
+Kafka client uses this to connect to the Kafka cluster.
+
+Interview tip:
+If you have multiple brokers, you can pass them as a comma-separated list:
+
+"localhost:9092,localhost:9093"
+
+🧱 ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG
+kafkaProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+
+
+Kafka needs to convert (serialize) Java objects into bytes before sending them over the network.
+
+This tells Kafka to convert the key (usually a String like order ID) into bytes.
+
+🧱 ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG
+kafkaProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+
+
+Converts your Order object (Java POJO) into JSON and then into bytes.
+
+That’s how Kafka can transmit your Order data as a JSON message.
+
+🏭 return new DefaultKafkaProducerFactory<>(kafkaProps);
+
+This creates the ProducerFactory using the configuration map.
+
+Spring uses this factory to create producers internally when you call KafkaTemplate.send().
+
+3️⃣ @Bean public KafkaTemplate<String, Order> kafkaTemplate()
+
+KafkaTemplate is a Spring helper class for sending messages to Kafka.
+
+It uses the ProducerFactory we just built.
+
+Works similar to JdbcTemplate or RestTemplate — simple wrapper to send data.
+
+Example usage:
+
+@Autowired
+private KafkaTemplate<String, Order> kafkaTemplate;
+
+kafkaTemplate.send("order_topic", orderObject);
+
+
+✅ Behind the scenes:
+
+KafkaTemplate gets a producer from the factory
+
+Converts your Order → JSON → bytes
+
+Sends to topic → order_topic
+
+Closes producer safely when done
+
+
+
 

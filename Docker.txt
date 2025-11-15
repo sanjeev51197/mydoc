@@ -1,0 +1,118 @@
+Docker
+===========================================================
+Launch Ec2 instance -> Login in gitbash -> Install docker 
+
+1.create simple spring boot application with web dependency.
+2.right click on project-> create file -> give name -> Dockerfile ->save
+
+3.open pom.xml ->scroll down go to build section-> add this   <finalName>demoapp</finalName>
+
+                                                                          this is the name of your project which will be used in dockerfile ,in entrypoint to run the jar. it the name of jar file name which will create
+
+
+4.go to Dockerfile which you have already created
+add these lines->
+
+FROM eclipse-temurin:17-jdk
+
+COPY target/demoapp.jar  /usr/app/
+
+WORKDIR /usr/app/
+
+EXPOSE 8080
+
+ENTRYPOINT ["java", "-jar", "demoapp.jar"]
+
+
+
+5.no right click on demoapp project -> go to to properties -> open root folder your project -> open gitbash -> create local repository 
+   ->push your code to GitHub  -> now to copy the project code url and take that into Linux server .
+
+
+6.After Installing docker -> Install git                                        yum for redhat and amazon linux
+                           ->sudo yum install git -y                            apt for Debian and Ubuntu linux
+                           -> git --version 
+                           -> whereis git   gives you details where git is located in folder                     
+
+7.Install maven          ->  sudo yum install maven -y
+                         -> mvn -v     to check version installed or not
+
+8. git clone https://github.com/sanjeev51197/docker-test.git     ->   enter      -> ls  to check file or folder  
+
+      in my case there is A.txt   Dockerfile       docker-test 
+
+9.  cd docker-test         
+
+10.  ls -l
+
+total 32
+-rw-r--r--. 1 ec2-user ec2-user   137 Nov 15 10:14 Dockerfile
+-rw-r--r--. 1 ec2-user ec2-user 11790 Nov 15 10:14 mvnw
+-rw-r--r--. 1 ec2-user ec2-user  8481 Nov 15 10:14 mvnw.cmd
+-rw-r--r--. 1 ec2-user ec2-user  1393 Nov 15 10:14 pom.xml
+drwxr-xr-x. 4 ec2-user ec2-user    30 Nov 15 10:14 src
+
+
+11.  -> mvn clean package       -> it will package the project
+
+12.  -> ls -l     -> you will see a target folder
+
+
+-rw-r--r--. 1 ec2-user ec2-user   137 Nov 15 10:14 Dockerfile
+-rw-r--r--. 1 ec2-user ec2-user 11790 Nov 15 10:14 mvnw
+-rw-r--r--. 1 ec2-user ec2-user  8481 Nov 15 10:14 mvnw.cmd
+-rw-r--r--. 1 ec2-user ec2-user  1393 Nov 15 10:14 pom.xml
+drwxr-xr-x. 4 ec2-user ec2-user    30 Nov 15 10:14 src
+drwxr-xr-x. 9 ec2-user ec2-user 16384 Nov 15 10:19 target
+
+
+13.  ->cd target 
+
+14.   -> ls -l
+
+-rw-r--r--. 1 ec2-user ec2-user 21025254 Nov 15 10:19 demoapp-0.0.1-SNAPSHOT.jar
+-rw-r--r--. 1 ec2-user ec2-user     3049 Nov 15 10:19 demoapp-0.0.1-SNAPSHOT.jar.original
+drwxr-xr-x. 3 ec2-user ec2-user       25 Nov 15 10:19 generated-sources
+drwxr-xr-x. 3 ec2-user ec2-user       30 Nov 15 10:19 generated-test-sources
+drwxr-xr-x. 2 ec2-user ec2-user       28 Nov 15 10:19 maven-archiver
+drwxr-xr-x. 3 ec2-user ec2-user       35 Nov 15 10:19 maven-status
+drwxr-xr-x. 2 ec2-user ec2-user       99 Nov 15 10:19 surefire-reports
+drwxr-xr-x. 3 ec2-user ec2-user       17 Nov 15 10:19 test-classes
+
+
+15. -> cd ..          back to root folder that is docker-test
+
+16. create repository in dockerhub  ->test
+
+17 .-> docker build -t sanjeev51197/test:testing-v1 .
+
+18.  docker run -d -p 8080:8080 sanjeev51197/test:testing-v1
+
+allow 8080 in security group and copy the ec2 public ip address
+ ->13.201.226.5:8080/message   enter      ->Hello Sanjeev
+
+
+==================================================
+how to publish docker image inside dockerhub 
+================================================
+
+->docker login
+->username -
+->password -
+
+Login Succeeded
+[ec2-user@ip-172-31-3-42 my-docker-test]$     ->     docker push sanjeev51197/test:testing-v1
+The push refers to repository [docker.io/sanjeev51197/test]
+5f70bf18a086: Mounted from psait/pankajsiracademy
+163ad52abee1: Pushed
+
+
+===========================================================================================================
+
+
+
+
+
+
+
+    
