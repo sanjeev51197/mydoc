@@ -354,18 +354,21 @@ to mark it as resolved.
 ✅ (Optional: you can say “I often use VS Code or GitHub Desktop to resolve conflicts easily.”)
 
 
-note 
-whatever changes in notepad 
-first 
+note - assuming your working in login error branch.
+open in your local system your project file and do some changes in notepad 
+now in bash 
 
 -> git add .
 -> git commit -m "meesaage"
-
+now before doing a push operation to the guit of repository open the ketub and go to your branch location where you want to do changes now open your file and do some changes in the same line now make commit and open your Bass again now full request that is -> git pull
 before doing a push ..
 first  -> git pull
 
-then remove the changes then again git add . ,  git commmit  then lastly -> git push
-
+when you do a get full we will get a conflict message that there is a merge conflict now open the file in the notepad make the changes whatever you want to remove. 
+then save the file .
+git add .
+git commit -m
+git push
 
 
 RESET -------------------------------SOFT  /  HARD
