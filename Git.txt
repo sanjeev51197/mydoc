@@ -399,7 +399,8 @@ type   esc :wq enter
 after that dont forget to do a  -> git push
 
 ----------------------------------------------------------------------------------------------------------------------
-git forge.
+#git forge.
+=============
 if you want anyone to work on your github code..
 you need to collaborate .
 
@@ -427,11 +428,23 @@ after this you can check differences
 
 ->git pull 
 
+🧠 When to use?
+✔ Use git fetch when:
+---------------------------
+You want to see what changed before updating
+You want to avoid conflicts
+You want to review code first
+
+✔ Use git pull when:
+-------------------------
+You want to update your local branch immediately
+You are okay with automatic merge
 
 
 
 🧠 What is git stash?
 -----------------------------------------------------------------------------------------
+ git stash is one of the most useful commands in Git — especially when you are in the middle of some work and suddenly need to switch branches.
 👉 git stash temporarily saves your uncommitted changes (both modified and staged files)
 so that you can switch branches or pull new changes safely — without committing.
 
@@ -452,12 +465,71 @@ Later, take your notes out and continue (git stash pop)   -> git stash apply    
                                                          -> git add .
                                                           -> git commit -m "m"
                                                           -> git push
+practical
+=========
+you are working on bug-fix branch 
+created A.txt B.txt
+made some changes .... now before adding and commiting . 
+if you need to change the branch and work on main
+so in these case you want yout previous work saved in drawer .
+->git stash
+->git checkout main .. work on that main branch 
+now after doing in main branch . you want to do your previous work .
+-
+Option 1: Bring back + delete stash
+->git stash pop
+
+Option 2: Bring back but keep stash saved
+-> git stash apply
+
+Now your changes in A.txt and B.txt are restored exactly the way you left them.
+
+✅ What is git cherry-pick?
+=================================
+git cherry-pick takes a specific commit from one branch and applies it to another branch.
+
+✔ You don’t merge the full branch
+✔ You take only one particular commit you want
+
+Think of it like copy–pasting one commit from another branch.
+
+🎯 Practical Example Using Your Files (A.txt & B.txt)
+Assume this situation:
+
+You have two branches:
+---------------------------------
+main
+feature
+
+Step 1 — On feature branch, you edit A.txt
+git checkout feature
+
+echo "New line in A" >> A.txt
+git add A.txt
+git commit -m "Added a new line in A.txt"
 
 
-🧠 What is git cherry-pick?
--------------------------------------------------------------------
-👉 git cherry-pick lets you take a specific commit from one branch
-and apply it onto another branch, without merging the whole branch.
+This commit hash becomes something like:
+abc1234
+
+❗ Now you want THIS commit on main branch also.
+
+You don’t want to merge full feature branch.
+
+So you cherry-pick that specific commit.
+
+✅ Step 2 — Go to main branch
+git checkout main
+
+✅ Step 3 — Cherry-pick the commit
+git cherry-pick abc1234
+
+
+🔥 Result:
+
+Only the change made in that single commit (A.txt update) is applied to main
+You did NOT bring other feature branch commits
+No merge, no extra unwanted files
 
 Think of it like:
 “You pick one cherry 🍒 (commit) from a tree (branch) and put it in your basket (current branch).”
