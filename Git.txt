@@ -413,11 +413,15 @@ open project -> setting-> collaborator -> add people -> give invite code.
 
 You can answer:
 
-"git fetch only downloads changes from the remote but doesn’t modify my local branches,    
+"git fetch only downloads changes from the remote(GitHub) but doesn’t Merge them into your local branch.also does not change your working directory. 
+
 
 ->git fetch
 ->git merge
 
+
+after this you can check differences 
+-> git diff main origin / main
 
  while git pull fetches and then automatically merges them into my current branch."
 
