@@ -307,7 +307,11 @@ to push the changes to github sub branches  ...
 ->git push --set-upstream origin bug-fix-3456-login-error
 
 now refresh sub-branch would have created open and 
-do PR(pull request and merge to bug-fix)  
+do PR(pull request and merge to bug-fix)
+new pull request ->
+base-> bug-fix
+compare-> bug-fix-3456-login-error
+
 ----------------------------------------
 merge with branch bug-fix to big-fix-3456-login-error and commit..................
 
