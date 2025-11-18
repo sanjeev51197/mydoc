@@ -1,0 +1,40 @@
+Spring Security With MicroService 
+
+API Gateway 
+--------------
+in this we created a JwtFilterClass but its implements GlobalFilter,Ordered which is responsible that which Url is open and which url requires a token to access the url.
+
+ex -
+@Component
+public class JwtAuthenticationFilter implements GlobalFIlter,Ordered {
+
+private static final String SECRET_KEY="my-super-secret-key";     //This secret key has to match with the secret key while you gave in the   
+                                                                   authService class to generate the token.
+
+private static final List<String> openEndPoints=List.of(
+      "/api/v1/auth/login" ,
+      "/api/v1/auth/register" );            // these are open Url .. APigateay dont validate this.. This url don't requires a jwt token.
+
+
+
+private static final Map<String,List<String>> protectedEndPointsWithRoles=Map.of(
+         "/microservice1/message",List.of("ROLE_ADMIN"));     //only admin can access this url. This url requires a jwt token which has the role  
+                                                                admin
+
+   
+
+
+
+       String authHeader=                exchange.getRequest().getHeaders().getFirst("Authorization);        
+        if(authHeader==null || !authHeader.startsWith("Bearer ")) {
+         exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+         return exchange.getResponse().setComplete();
+}  
+     String token=  authHeader.subString(7);
+      
+        try{
+
+             DecodedJWT jwt=JWT.require(Algorithm.HMAC256(SECRET_KEY))
+                    .build()
+          
+          .
