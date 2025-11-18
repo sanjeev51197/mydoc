@@ -482,7 +482,7 @@ you will get url click and add card details ..... 4242 4242 4242 4242   05/28 / 
 ====================================================================================================================================
 Day-7        -Updation of Booking Details if the payment is successful
 Payment Success Message. in Controller we are going to do.
-
+ 
 
 In Booking-service 
 created a BookingConfirmation class in entity package . and gave the details which i want after payment success.in page.
@@ -495,7 +495,7 @@ Now in BookingController.
                     @RequestParam LocalDate date,
                     @RequestParam LocalTime time)
 
-comparing date and time and if availave then booking happens.
+comparing date and time and if availave then booking happens.  for that if added manually in appointmentschwduledb todays data and timeslots......
 we added if condition  using equals() to match the date and time.  
  
 List<DoctorAppointmentSchedule> appointmentSchedules = d.getAppointmentSchedules();
@@ -513,5 +513,201 @@ List<DoctorAppointmentSchedule> appointmentSchedules = d.getAppointmentSchedules
         }
 
 ========================================================
+
+Day -8
+===========================================================
+In Appointment schedule added data for todays 
+in timeslots added for todays data.
+
+
+now we'll build a URL  that will have local date and time.. 
+
+http://localhost:8085/api/v1/booking/getdoctor?doctorId=1&patientId=1&date=2025-11-18&time=14:30
+
+->if the date and timeslots matches with the url we'll get message in console complete booking and in postman "done" we get.
+
+here we did'not get the complete booking message. 
+You are not getting “Complete Booking” because your condition is wrong.
+You wrote this----
+if (timeSlots.equals(time)) {
+
+❌ This is incorrect because:
+timeSlots = List<TimeSlots>
+time = LocalTime
+
+You are comparing a list to a LocalTime, which will always return false.
+✅ Correct Condition
+Inside your loop you should compare:
+
+if (t.getTime().equals(time)) {
+    System.out.println("Complete Booking");
+}
+
+
+Because:
+t is one individual time slot
+t.getTime() returns LocalTime
+time is your input LocalTime
+So they can be compared.
+
+
+now we set the booking date and time after comparing .. and also set the docter address and patient name in bookingconfirmation
+if (t.getTime().equals(time))   //t.getTime() returns LocalTime and  time is your input LocalTime
+                    {
+                         bookingConfirmation.setDate(date);
+                         bookingConfirmation.setTime(time);
+
+}
+}
+}
+}
+here we are saving the bookingconfirmation details in database for that we created BookingCOnfirmationRepository.
+for that we inject autowired BookingconfrimationRepositroy.
+
+ bookingConfirmationRepository.save(bookingConfirmation);
+return "done"
+}
+}
+
+//one we done .. In Postman GetMapping use   and send  your data will be saved in Database .
+http://localhost:8085/api/v1/booking/getdoctor?doctorId=1&patientId=1&date=2025-11-18&time=14:30
+id  Address                 date        nameofdoctor   patient                status    time
+1	  No. 6, 100 feet road	2025-11-18    	sujith	        mike                   	0	        14:30:00.000000
+						
+here the status is false .. when he confirms the payment then status will be true.
+
+=======================================================================================================================
+
+
+
+Day -9
+Booking Integration we'll do today and once the payment is done w'll do true in status.
+
+in booking-service we created a PaymentClient interface 
+
+@FeignClient(name = "PAYMENT-SERVICE")
+public interface PaymentClient {
+
+    @PostMapping("/product/v1/checkout")
+    StripeResponse checkout(@RequestBody ProductRequest productRequest);
+now we require same   StripeResponse dto and ProductRequest which is in Payment-service  dto -> which should be added in dto package of booking-service
+becasuse the return type is json.
+
+.now in BookingController -> inject PaymentClient with autowired
+
+now after saving the bookingconfirmation page
+//save booking confirmation
+         bookingConfirmationRepository.save(bookingConfirmation);
+      
+       ProductRequest pr=new ProductRequest();
+        pr.setName(bookingConfirmation.getPatientName());
+        pr.setAmount(800L);
+        pr.setCurrency("INR");
+        pr.setQuantity(1L);
+        
+        paymentClient.checkout(pr);
+         return "done";
+-------------------------------------------------------------------------------------------
+in we want to change the bookingconfirmation status to true instead of printing successful and get the booking details
+
+to get this 
+in Payment service  -> inProductRequest we added private long booking and getters and setters
+
+also in Booking-service->dto->ProductRequest also add private long bookingId and getters and setters
+
+now we in bookingController  also set the bookingId.
+
+BookingConfirmation savedBookingConfirmation=  bookingConfirmationRepository.save(bookingConfirmation);  //it ill store the value of booking it will have id.
+
+now 
+
+  ProductRequest pr=new ProductRequest();
+        pr.setName(bookingConfirmation.getPatientName());
+        pr.setAmount(800L);
+        pr.setCurrency("INR");
+        pr.setQuantity(1L);
+        pr.setBookingId(saveBookingConfirmation.getId());     //here we set .........
+        
+        paymentClient.checkout(pr);
+         return "done";
+-------------------------------------------------------------------------------------------------
+now after payment completion .
+we want a booking confirmation details for that bookingId ;
+for that we made a new method  .which will give the details for that booking.
+
+ @GetMapping("/bookingid")
+    public BookingConfirmation getBookingById(                   //THIS IS THE METHOD IN BOOKING-CONTROLLER
+            @RequestParam long bookingId)
+    {
+        return bookingConfirmationRepository.findById(bookingId).get();
+    }
+--------------------------------------------------------------------------------------------------------------------------------
+
+
+now we require a fiegn client for this method which will call the Payment-Service
+
+so in payment-serivce 
+added feign client dependency and added a BookingClient interface ..
+
+@FeignClient(name = "BOOKING-SERVICE")                                    //THIS IS THE CLIENT INERFACE IN  PAYMENT-SERVICE       
+                                                                         //CLIENT MEANS HE HAS SOMEONE WHICH WILL CALL IF NEED .. LIKE PAYMENT IS CALLING BOOKING-SERVICE 
+                                                                          AND BOOKING-SERVICE WILL CALL THE METHOD AND GET THE DETAILS AND GIVE TO PAYMENT-SERVICE.
+public interface BookingClient {
+                                           
+    @GetMapping("/api/v1/booking/bookingid")
+    public BookingConfirmation getBookingById(@RequestParam long bookingId);
+}
+
+we  have to get the BookingConfirmation dto inside PaymentService dto..to fetch the details give to json.
+BASED ON THE ID IT WILL GIVE THE BOOKING DETAILS 
+NOW WE REQUIRE ANOTHER METHOD IN BOOKING-CONTROLLER TO UPDATESTATUS . THE DATABASE AND MAKE THE STATUS TRUE.
+
+ @PutMapping("/updateStatus")
+    public void confirmBooking(@RequestBody BookingConfirmation bookingConfirmation)
+    {
+        bookingConfirmationRepository.save(bookingConfirmation);
+    }
+
+we put this method into client of payment-service
+which will get the details of booking based on id after payment confirmation . once it the detailed it update the data in database by calling the update method.
+
+so in BookingClient we have two method one will get the details based on id and another will update the data in database
+------>>>>>>>>>>>>>>>>>>
+
+@FeignClient(name = "BOOKING-SERVICE")
+public interface BookingClient {
+
+    @GetMapping("/api/v1/booking/bookingid")
+    public BookingConfirmation getBookingById(@RequestParam long bookingId);
+
+    @PutMapping("/api/v1/booking/updatestatus")
+    public void confirmBooking(@RequestBody BookingConfirmation bookingConfirmation);
+}
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+now in Payment-service-> in StriveService
+added bookingId
+.setSuccessUrl("http://localhost:5555/product/v1/success?session_id={CHECKOUT_SESSION_ID}&bookingId="+productRequest.getBookingId())
+
+this will supply booking id to the controller .
+now controller will do @requestparam on bookingId ->
+
+ @GetMapping("/success")
+    public ResponseEntity<String> handleSuccess(@RequestParam("session_id") String sessionId,@RequestParam("bookingId") long bookingId) {
+
+now if Paid 
+then 
+  if ("paid".equalsIgnoreCase(paymentStatus)) {
+          BookingConfirmation confirm= client.getBookingById(bookingId);   this will back confirmation object   which have the details of booking 
+
+          confirm.setStatus(true);             setting the status true in BookinngConfirmation after payemntdone.
+
+          client.confirmBooking(confirm)
+
+n
+
+
+
 
 
