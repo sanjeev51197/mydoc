@@ -1,0 +1,387 @@
+Jenkins
+=======================
+“Jenkins is an open-source automation tool that executes CI/CD pipelines to build, test, and deploy applications automatically.”
+CI = Continuous Integration
+CD = Continuous Delivery / Deployment
+
+Jenkins CI/CD
+#############
+
+-> Jenkins is a popular open-source automation server used for Continuous Integration (CI) and Continuous Deployment (CD) in software development.  It helps automate the building, testing, and deployment of applications.
+
+-> Automation – Jenkins automates repetitive tasks like code compilation, testing, and deployment
+
+-> Plugins – It has 1,800+ plugins, integrating with Git, Docker, Kubernetes, Maven, and more
+
+-> Pipeline as Code – Uses Jenkinsfile (written in Groovy) to define CI/CD pipelines.
+
+
+#Why Jenkins? (Interview Points)
+--------------------------------
+
+✔ Free & open source
+✔ Huge plugin ecosystem
+✔ Supports all technologies (Java, Node, Python...)
+✔ Works with Git, GitHub, Docker, Kubernetes, Maven, AWS, etc.
+✔ Highly customizable
+
+
+What is Jenkins Pipeline?
+----------------------------
+
+Pipeline = CI/CD steps as code defined in Jenkinsfile.
+pipeline {
+    agent any
+
+    stages {
+        stage('Build') {
+            steps {
+                sh 'mvn clean install'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                sh 'mvn test'
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                sh 'echo Deploying to server...'
+            }
+        }
+    }
+}
+
+
+Jenkins CI/CD Workflow:
+____________________________
+
+-> Developers push code to a repository (GitHub, GitLab, Bitbucket).
+-> Jenkins pulls the latest code and triggers a build using maven.
+-> Artifact is generated (e.g., JAR, Docker image).
+-> Deployment – Jenkins deploys the application to a test/staging/production environment
+-> We can create jenkins pipeline in 2 ways
+
+		1) Declarative Pipeline
+		2) Scripted Pipeline (groovy)
+
+What is Pipeline?
+---------------------
+->A pipeline in Jenkins is a set of automated steps that define how your application should be built → tested → packaged → deployed.
+ A Jenkins Pipeline is a CI/CD workflow written as code (using Jenkinsfile) that automates the entire software delivery process.
+
+
+Jenkins Declarative Pipeline Explained
+---------------------------------------
+A Jenkins Declarative Pipeline is a structured way to define a CI/CD pipeline using Groovy-based syntax. Let's break down your pipeline step by step.
+
+
+Pipeline Structure:
+======================
+
+pipeline {  
+    agent any  // Runs the pipeline on any available agent (Jenkins node)
+
+    stages {  // Defines different stages of the pipeline
+        stage('git clone') {  // Stage 1: Clone the repository
+            steps {  
+                // Logic for cloning a Git repository
+            }
+        }
+        stage('mvn build') {  // Stage 2: Build the project using Maven
+            steps {  
+                // Logic for running Maven build
+            }
+        }
+        stage('build image') {  // Stage 3: Build a Docker image
+            steps {  
+                // Logic for building a Docker image
+            }
+        }
+    }
+}
+Explanation of Each Section
+1. pipeline {}
+This is the root block that defines the entire CI/CD pipeline.
+
+2. agent any
+ it Specifies that the pipeline can run on any available Jenkins node (agent).
+
+If you want to run it on a specific node, you can use:
+
+groovy
+
+agent { label 'my-node' }
+
+3. stages {}
+
+A stage represents a logical step in the pipeline.
+
+Each stage contains steps {} where the actual actions are performed.
+
+--------------------------------------------------------------------------------------------------------------------------------------------------
+Jenkins Server Setup in Linux VM
+==================================================================================================================================================
+Step - 1 : Create Linux VM in AWS
+
+Create Ubuntu VM using AWS EC2 (t2.medium, because jenkins require minimum 4gb RAM)
+
+Note: Enable 8080 Port Number in Security Group Inbound Rules
+
+
+Step-2 : Install Java using below commands
+--------------------------------------------
+sudo apt update
+sudo apt install fontconfig openjdk-17-jre
+java -version
+
+
+
+
+
+Step-3 : To Install Jenkins use the below commands
+----------------------------------------------------
+
+
+sudo wget -O /usr/share/keyrings/jenkins-keyring.asc \
+  https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
+echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] \
+  https://pkg.jenkins.io/debian-stable binary/ | sudo tee \
+  /etc/apt/sources.list.d/jenkins.list > /dev/null
+sudo apt-get update
+sudo apt-get install jenkins
+
+
+
+
+ Step 4-5 After installation, start Jenkins
+------------------------------------------
+sudo systemctl start jenkins
+sudo systemctl enable jenkins
+sudo systemctl status jenkins
+
+
+
+Step-6 : Open jenkins server in browser using VM public ip of linux vm
+------------------------------------------------------------------------
+http://public-ip:8080/                     public ip ec2 public ip   open the Url  13.127.176.102:8080
+
+Step-7 : Copy jenkins admin password
+
+sudo cat /var/lib/jenkins/secrets/initialAdminPassword
+
+Step-8 : Create Admin Account & Install Required Plugins in Jenkins
+____________________________________________________________________
+
+Sample test-pipleline we created . 
+there is a configure section select right hello-world -> click apply and save  -> click on build now
+in left corner click on timeing -> click on console output you will get the output
+
+now go back to test-pipe -> congigure and there's a option build periodically 
+give  -> * * * * *  which will run the file every one minute  
+
+click on apply and save ... wait for one minute it will automatically run..   no need to click on build now.
+
+
+
+but Build Periodically in not recommended.  
+rather we use Poll SCM(source code management) 
+
+it will only run the file when  changes in Github has happened.
+if give * * * * * so every one minute is there any change or modification in GitHub or not ..depends on that it runs.....
+
+
+
+==============================================================================================================================================
+
+
+http://13.204.64.224:8080/
+
+
+created a Job- test-pipeline
+
+sample pipeline hello-world select -> scroll down pipleline syntax -> select git -> go to GitHub select any docker application url from main
+
+Steps
+Sample Step
+
+git: Git
+git
+?
+Repository URL?
+https://github.com/sanjeev51197/my-docker-test.git
+
+Branch?
+main
+
+Credentials?
+
+- none -
+Add
+
+Include in polling?
+?
+
+Include in changelog?
+?
+Generate Pipeline Script
+git branch: 'main', url: 'https://github.com/sanjeev51197/my-docker-test.git'   copy these line
+
+------------------------------------------------------------------------------------------------------
+now go back to test-pipeline confgire and paste in Script under steps
+
+click on apply and save -> build now ..  -> if it green that means Jenkins has cloned the project from GitHub.
+click on green tick -> console -> check whether its cloned or not.
+so with this we have created one pipeline.
+
+---------------------------------------------------------------------------------------------------------------
+#######Note: The sh command in a Jenkins Declarative Pipeline is used to execute shell (bash)
+Now we require maven -> go to dashboard -> setting -> tools-> add maven with name maven-3.9.9 and click save 
+
+second stage 
+stage('mvn') {
+    steps {
+        sh 'mvn clean test package'            //This runs a shell command on Jenkins agent:
+    }
+}
+
+| Command         | Meaning                                                           |
+| --------------- | ----------------------------------------------------------------- |
+| **mvn clean**   | Deletes the `target/` folder (old builds). Ensures a fresh build. |
+| **mvn test**    | Runs all unit test cases under `src/test/java`.                   |
+| **mvn package** | Compiles code + packages it into `.jar` or `.war`.                |
+
+
+
+#Note whenever your are using any tools ... be carefull write the name of tool under the root of Pipeline
+      pipeline {
+              
+             agent any
+
+
+                        tools {
+
+                               maven-3.9.9
+
+}       now click on apply and save  and build now 
+
+
+-------------------------------------------------------------------------------------------------------------------------------------
+
+Next step we are goin to build the Docker image  .So in Linux machine .Install Docker and Start. 
+Setup Docker in Jenkins
+##############################################
+
+curl -fsSL get.docker.com | /bin/bash
+sudo usermod -aG docker jenkins
+sudo usermod -aG docker ubuntu
+sudo systemctl restart jenkins
+sudo docker version
+
+
+  stage('Docker image') {
+            steps {
+                  sh 'docker build -t sanjeev51197/mytest .'       //v1 is the tag name   //mytest is GitHub repository
+                                                                   // we have to give  a      .(dot)   means it working in current working drctry
+            }
+            
+        }   
+
+ now click on apply and save  and build now 
+
+------------------------------------------------------------------------------------------------------------------------------------------------
+
+now next step
+
+ stage('deployment'){
+            steps{
+                sh 'docker run -d -p 9090:8080 --name mike sanjeev51197/mytest'       //mike is the container name  //mytest is image name
+            }
+
+9090 is host port no we need to allow this in inbound rules of ec2.
+and in url http://13.204.64.224:9090/message  
+==============================================================================================================================================
+
+
+### Now from here i want to start my pipeline every single minute ================>>>>>>>>>>>>>>>
+
+======================================================================
+
+then we go for triggers -> build periodically -> but this is not good practice.
+
+Note ---
+we only run the script when there is some changes in code in GitHub.
+
+then we go for Poll PCM
+-----------------------
+
+for that first in configure we need to add these line because container is already running we need to stop this and  rerun again.
+// mike is the container name
+
+steps{
+                sh 'docker stop mike'
+                sh 'docker rm mike'
+                sh 'docker run -d -p 9090:8080 --name mike sanjeev51197/mytest'
+            }
+
+================================================================================================================================
+
+First Integration----->
+
+
+pipeline {
+    agent any
+         tools{
+             maven 'maven-3.9.9'
+         }
+    stages {
+        stage('git clone') {
+            steps {
+                 git branch: 'main', url: 'https://github.com/sanjeev51197/my-docker-test.git'
+            }
+            
+        }
+         stage('maven execute commands') {
+            steps {
+                  sh 'mvn clean test package' 
+            }
+            
+        }
+          stage('Docker image') {
+            steps {
+                  sh 'docker build -t sanjeev51197/mytest .' 
+            }
+            
+        }
+          stage('deployment'){
+            steps{
+                sh 'docker stop mike'
+                sh 'docker rm mike'
+                sh 'docker run -d -p 9090:8080 --name mike sanjeev51197/mytest'
+            }
+        }
+    }
+}
+
+
+note-
+If container mike is not running yet, this will happen:
+
+Error: No such container: mike
+
+🟢 Corrected Deployment Stage ->
+
+stage('deployment') {
+    steps{
+        sh 'docker stop mike || true'                                  //This makes the command continue even if the container doesn’t exist.
+        sh 'docker rm mike || true'
+        sh 'docker run -d -p 9090:8080 --name mike sanjeev51197/mytest'
+    }
+}
+        
+
+
+
+
