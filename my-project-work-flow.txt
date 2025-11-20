@@ -623,7 +623,7 @@ now
 
   ProductRequest pr=new ProductRequest();
         pr.setName(bookingConfirmation.getPatientName());
-        pr.setAmount(800L);
+        pr.setAmount(8000L);
         pr.setCurrency("INR");
         pr.setQuantity(1L);
         pr.setBookingId(saveBookingConfirmation.getId());     //here we set .........
@@ -705,8 +705,15 @@ then
 
           client.confirmBooking(confirm)
 
-n
 
+--------------------------------------------------------------------------------------------------------------------------------------------------------------
+Day -10 
+in Database we updated the appointmentSchedule date and Time for future date and todays Date
+
+then In Postman 
+GET
+http://localhost:8085/api/v1/booking/book?doctorId=1&patientId=1&date=2025-11-20&time=21:00        send
+->open the successurl -> do the payment -> submit -> data got updated in database.
 
 
 
