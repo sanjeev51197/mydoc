@@ -430,7 +430,9 @@ Launch Ec2 instance -> Login in gitbash -> Install docker
 1.create simple spring boot application with web dependency.
 2.right click on project-> create file -> give name -> Dockerfile ->save
 
-3.open pom.xml ->scroll down go to build section-> add this   <finalName>demoapp</finalName>
+3.open pom.xml ->scroll down go to build section-> add this   <build>
+	     <finalName>demo-app</finalName>
+		<plugins>
 
                                                                           this is the name of your project which will be used in dockerfile ,in entrypoint to run the jar. it the name of jar file name which will create
 
@@ -439,14 +441,15 @@ Launch Ec2 instance -> Login in gitbash -> Install docker
 add these lines->
 
 FROM eclipse-temurin:17-jdk
+LABEL maintainer="sanjeev"
 
-COPY target/demoapp.jar  /usr/app/
+WORKDIR /usr/app
 
-WORKDIR /usr/app/
+COPY target/docker-test.jar docker-test.jar
 
 EXPOSE 8080
 
-ENTRYPOINT ["java", "-jar", "demoapp.jar"]
+ENTRYPOINT ["java", "-jar", "docker-test.jar"]
 
 
 
@@ -510,6 +513,19 @@ drwxr-xr-x. 3 ec2-user ec2-user       17 Nov 15 10:19 test-classes
 16. create repository in dockerhub  ->test
 
 17 .-> docker build -t sanjeev51197/test:testing-v1 .
+
+it means->Build a Docker image from the Dockerfile in the current folder and name it sanjeev51197/mytest, with version tag mydocker-1.
+
+# -t name:tag
+
+-t means tag the image (give it a name).
+
+Tags are used to version your image.  example
+latest
+v1
+v2
+dev
+prod
 
 18.  docker run -d -p 8080:8080 sanjeev51197/test:testing-v1
 
