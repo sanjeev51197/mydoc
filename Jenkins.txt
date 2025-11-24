@@ -381,7 +381,80 @@ stage('deployment') {
     }
 }
         
+================================================================================================================================================
+
+setup you need to do.
+launch an ec2 with 4gb ram enable inbound rule 9090 and 8080
+install java jdk ,
+install jenkins
+add maven in tools in jenkins
+lastly    run these command
+======
+✅ Fix: Give Jenkins permission to run Docker
+
+Run these commands on your Ubuntu EC2:
+
+1️⃣ Add Jenkins user to docker group
+sudo usermod -aG docker jenkins
+
+2️⃣ Restart Docker
+sudo systemctl restart docker
+
+3️⃣ Restart Jenkins
+sudo systemctl restart jenkins
 
 
+==========================================
 
+mysecond pipeline  
+
+
+pipeline {
+    agent any
+
+    tools {
+        maven 'maven'
+    }
+
+    stages {
+
+        stage('Clean Workspace') {
+            steps {
+                deleteDir()
+            }
+        }
+
+        stage('Clone Repository') {
+            steps {
+                sh 'git clone https://github.com/sanjeev51197/mytestdocker.git'
+            }
+        }
+
+        stage('Build with Maven') {
+            steps {
+                sh '''
+                    cd mytestdocker
+                    mvn clean package
+                '''
+            }
+        }
+
+        stage('Docker image') {
+            steps {
+                sh '''
+                    cd mytestdocker
+                    docker build -t sanjeev51197/mytest .
+                '''
+            }
+        }
+
+        stage('Deployment') {
+            steps {
+                sh 'docker stop angel || true'
+                sh 'docker rm angel || true'
+                sh 'docker run -d -p 9090:8080 --name angel sanjeev51197/mytest'
+            }
+        }
+    }
+}
 
