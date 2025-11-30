@@ -1051,3 +1051,88 @@ Microservices sharing configuration.
 
 Use EFS when many EC2 instances must access the same files simultaneously
 and grow automatically.
+
+
+#####################
+AWS CLOUD FORMATION
+########################
+It is used to create Insfratucre in Aws
+IAAC(Insfracture as a Code)
+Supports JSon and YML Configurations.
+Adavantage is  Less Error rate .repitative task you dont do manuallly
+But Terraform is more populare because it works with multiple cloud service Provider
+Terraform is develoved by HAshioCorp
+In terrafrom we use HCL language(HCl is the HAshicorp configuration language.)
+Cloud Formation and Teeraform both purpose is to create Insfratucre using IAAC.  in IAAC iwill use cloud formation in aws or terraform where iwill write the code.
+Sample yml File
+---------------
+YML file to create Ec2 instance in Aws Cloud Formation.          THIS IS OUTDATED WE'LL FOCUS ON TERRAFORM
+
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "Create EC2 Instance in default VPC and default subnet"
+
+Parameters:
+  KeyName:
+    Type: AWS::EC2::KeyPair::KeyName
+    Description: "Existing EC2 KeyPair"
+
+  InstanceType:
+    Type: String
+    Default: t2.micro
+
+Mappings:
+  RegionMap:
+    ap-south-1:
+      AMI: ami-0e306788ff2473ccb    # Amazon Linux 2
+    us-east-1:
+      AMI: ami-0c2b8ca1dad447f8a
+    us-west-2:
+      AMI: ami-08962a4068733a2b6
+
+Resources:
+
+  EC2SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: "Allow SSH"
+      VpcId: !ImportValue DefaultVPCID
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+
+  MyEC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !FindInMap
+        - RegionMap
+        - !Ref AWS::Region
+        - AMI
+      InstanceType: !Ref InstanceType
+      KeyName: !Ref KeyName
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: true
+          DeviceIndex: 0
+          SubnetId: !ImportValue DefaultSubnetID
+          GroupSet:
+            - !Ref EC2SecurityGroup
+
+Outputs:
+  InstanceID:
+    Value: !Ref MyEC2Instance
+  PublicIP:
+    Value: !GetAtt MyEC2Instance.PublicIp
+================================================================================================================================================================
+
+#############
+TERRAFORM
+###############
+IT is IAAC (Insfrature as a Code)
+We use HCL as language
+Work with most of the cloud platforms like AWS ,GCP, Azure etc
+Install Terraform '    ... make a folder copy paste extract and copy the path edit in enivirment variable and add path  .check in cmd   ->terraform -v
+Install vsCode
+HCL Syntax
+------------
+
