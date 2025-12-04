@@ -1,0 +1,78 @@
+An exception-> is an unwanted or unexpected event that occurs during the execution of a program and disrupts the normal flow of the code.
+It represents an error condition — like dividing by zero, accessing a null object, reading a missing file, etc.
+
+Exception Handling -> in Java is a mechanism that allows developers to handle runtime errors gracefully, ensuring that the program doesn't crash unexpectedly. It helps in maintaining the normal flow of the application, provides meaningful error messages, and separates error-handling logic from the main business logic.
+
+Checked Exceptions -> are those that the compiler forces you to handle, usually because they might be recoverable (like IOException or SQLException). You must either use a try/catch block or declare them with throws.
+
+Unchecked Exceptions -> on the other hand, are usually due to programming errors and are not checked at compile time. They include exceptions like NullPointerException and ArithmeticException, and the compiler does not force you to handle them.
+
+
+throw-> is used within the method body to actually throw an exception.
+ It’s a statement that you use when you want to trigger an exception manually.
+
+throws-> on the other hand, is used in the method signature.
+ It declares that the method might throw certain exceptions,
+ and it informs the caller that they need to handle or further declare those exceptions.
+
+
+
+
+The finally -> block always executes — whether an exception occurs or not.
+It is mainly used for cleanup like closing files, database connections, etc.
+It won’t run only in rare cases like System.exit(0) or JVM crash.
+
+
+
+Custom exceptions-> are indeed used to represent specific business logic or domain-specific errors. For example, an AgeException can be used when a certain age requirement is not met.
+
+
+When does finally NOT execute?
+Only 2 cases:
+
+1️⃣ When System.exit() is called
+2️⃣ When JVM crashes
+
+
+NullPointerException -> is an unchecked exception, meaning the compiler does not force you to handle it.
+It occurs at runtime when you try to use a reference that points to null.
+
+
+Throwable -> is the topmost parent of all exceptions and errors in Java.
+Exception and Error both extend Throwable.
+
+
+
+What will happen if an exception occurs but there is no catch block provided?
+->JVM handles it and prints stack trace .If no catch block is present:
+
+
+ArithmeticException → Unchecked (Runtime) exception
+
+IOException, SQLException, FileNotFoundException) → Checked exceptions (compile-time)
+
+
+Exception -> is the parent of both checked and unchecked exceptions.
+
+
+Which of the following is the parent class of all unchecked exceptions?
+ans -RuntimeException
+
+
+Even if there is a return inside try or catch:
+👉 finally will always execute first
+👉 then the return value is sent back
+
+
+To create a custom exception, you must extend either:
+Exception → for a checked custom exception
+
+RuntimeException → for an unchecked custom exception
+
+ex-
+class AgeException extends Exception {
+    public AgeException(String message) {
+        super(message);
+    }
+}
+

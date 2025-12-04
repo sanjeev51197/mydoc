@@ -201,10 +201,14 @@ To generate log messages in file add the following in application.properties fil
 
 logging.file.name=app.log
 
+
+we can use logging.file.path=app.log -> that will generate a folder inside that app.log created.
+
 ################################################################################## 
 
 
-
+{ }  -> curly brace dynamically returns the value.So that your log messages have proper information
+ex-> log.info("User '{}' has registered",username);
 
 Example 1:
 #####################

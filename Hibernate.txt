@@ -1,0 +1,360 @@
+Hibernate
+#######################
+
+-> Hibernate is an ORM (Object relation mapping) framework tool
+-> It helps developers  map Java classes to database tables and automate CRUD operations (Create, Read, Update, Delete) without writing complex SQL queries.
+It eliminates boilerplate JDBC code and provides features like caching, lazy loading, and HQL.
+
+Why We Use Hibernate?
+#############################
+JDBC Problems
+
+❌ Too much boilerplate code
+❌ Need to write SQL manually
+❌ Difficult transaction management
+❌ No caching
+❌ Hard to maintain
+
+Hibernate Solutions ->
+
+✔ No SQL needed
+✔ Auto-transaction handling
+✔ Built-in caching
+✔ Maps classes → tables
+✔ Faster development
+✔ Database independent
+
+What is the significance of Hibernate over JDBC
+################################################
+Hibernate is more powerful than JDBC because it reduces boilerplate code, handles database operations automatically, supports caching, provides ORM, and makes applications faster and easier to maintain.
+
+
+2.What is JPA?
+######################
+JPA (Java Persistence API) is only a specification — meaning it is a set of interfaces and incomplete annotations.
+JPA is a Java specification that defines how to map Java objects to database tables and how to manage data in a relational database using object-oriented concepts.
+JPA itself does not provide implementation. It only defines interfaces and rules.
+
+The Implementation of JPA is done in hibernate and other ORM tools like EclipseLink, OpenJPA, DataNucleus
+
+
+What is the difference between JPA and Hibernate?
+############################################
+
+JPA → specification
+
+Hibernate → implementation
+
+
+HIBERNATE ARCHITECHTURE
+################################
+Hibernate architecture consists of Configuration, SessionFactory, Session, Transaction, and Query APIs. It hides JDBC in the background, uses dialects to generate DB-specific SQL, and maps Java objects to database tables using metadata.
+
+1. Configuration
+Definition: Configuration is the component that loads all Hibernate settings and mapping information from configuration files.
+
+
+Purpose:
+
+Reads hibernate.cfg.xml or hibernate.properties
+Loads database connection details
+Loads Hibernate properties (dialect, driver, URL, username, password)
+Loads entity class mappings
+Example:
+Configuration cfg = new Configuration().configure();
+
+2. SessionFactory:  SessionFactory is a thread-safe, heavyweight, immutable object that creates Session objects.
+                    It is created once per application.
+Purpose:
+Creates and manages Session objects
+Holds database connection pool
+
+3. Session : Session is a lightweight, non-thread-safe object used to perform CRUD operations on the database.
+ex- Session session = sessionFactory.openSession();
+
+4. Transaction: A Transaction represents a unit of work. It ensures ACID properties:
+Atomicity, Consistency, Isolation, Durability.
+
+Purpose:
+Groups multiple DB operations into a single unit
+Ensures data integrity
+Allows rollback if anything fails
+
+5. Query APIs :Hibernate supports multiple ways to retrieve data.
+
+(a) HQL (Hibernate Query Language)
+
+Object-oriented query language
+Works on entity names, not table names
+Database independent
+
+Example:
+Query q = session.createQuery("from Employee");
+
+(b) Criteria API
+Programmatic way to build queries
+
+6. JDBC (Hidden Layer) :Hibernate internally uses JDBC API to communicate with the database, but hides JDBC complexity from developers.
+
+Purpose:
+
+Convert HQL/Criteria queries → SQL
+Use JDBC to send SQL to DB
+Manage PreparedStatement, ResultSet, etc. internally
+
+7. Hibernate Dialect :Dialect tells Hibernate what SQL flavor to generate for the specific database.
+
+Example dialects:
+org.hibernate.dialect.MySQLDialect
+org.hibernate.dialect.PostgreSQLDialect
+
+
+What is Spring Data JPA?
+############################
+
+a. Spring Data JPA makes working with JPA easier by eliminating boilerplate code required for common database operations like saving, updating, deleting, and finding entities.
+
+d. By default, Spring Data JPA uses Hibernate as the ORM (Object Relational Mapping) tool in Spring Boot applications (unless you configure another JPA provider manually).
+
+
+What is repository layer in spring boot?
+##############################################
+
+-> The Repository Layer provides utility methods,
+-> Using this utility method we can perform database CRUD Operations
+-> Example of some utility methods save(), findById(), delete(), etc.
+
+What is ORM? (Object Relational Mapping)
+############################################
+ORM (Object Relational Mapping) is a programming technique that allows you to map Java objects to database tables automatically.
+It removes the need to write SQL manually and lets you interact with the database using objects instead of queries.
+
+What is HQL? (Hibernate Query Language)
+###########################################3
+HQL (Hibernate Query Language) is an object-oriented query language provided by Hibernate.
+It is used to write queries that work on Java entity objects instead of database tables.
+
+What is Persistent in Hibernate?
+####################################
+A Persistent object is an object that Hibernate is tracking and managing.
+Any changes made to it are automatically saved to the database.
+
+HQL vs SQL (Easy Difference)
+################################
+| HQL                   | SQL                |
+| --------------------- | ------------------ |
+| Works on Java classes | Works on DB tables |
+| Object-oriented       | Data-oriented      |
+| Database independent  | Database dependent |
+| Uses entity names     | Uses table names   |
+| Uses field names      | Uses column names  |
+
+
+Difference Between get() and load() in Hibernate
+####################################################3
+“In Hibernate, both get() and load() methods are used to fetch a record by primary key, but they work differently.”
+
+get() hits the database immediately and returns the actual object. If the record doesn’t exist, it simply returns null.
+
+load() doesn’t go to the database instantly — instead it returns a proxy object and performs the query only when I access any property. If the record doesn’t exist, the proxy throws an ObjectNotFoundException.
+
+So in short, get() is eager and safe, while load() is lazy and performance-optimized when I’m sure the record exists.”
+
+
+How to integrate Hibernate in your project?
+###########################################
+I followed these steps to integrate hibernate in my prject
+“Add dependencies → configure Hibernate → create entity classes → build SessionFactory → use Session for CRUD with transactions.”
+
+
+
+ MOST COMMONLY USED HIBERNATE ANNOTATIONS (WITH DEFINITIONS)
+#################################################################
+🟦 1. @Entity - It Marks a Java class as a Hibernate/JPA entity, meaning it is mapped to a database table.
+
+🟦 2. @Table- It Specifies the database table details (name, schema). //@Table(name = "employees")
+
+🟦 3. @Id- It Declares the primary key of the entity.
+
+🟦 4. @GeneratedValue - It Automatically generates the primary key.
+
+🟦 5. @Column - It Customizes column details like name, nullable, length.
+
+🟦 6. @Transient - It Marks a field that is not saved in the database.
+
+🟦 7. @Lob -Used for large objects (BLOB/CLOB), such as images, files, big text.
+
+🟦 8. @OneToOne -Defines a one-to-one relationship between two entities.
+
+🟦 9. @OneToMany -Defines a one-to-many relationship (e.g., one department → many employees).
+
+🟦 10. @ManyToOne -Many records refer to one parent entity (e.g., many employees → one department).
+
+🟦 11. @ManyToMany -Creates a many-to-many mapping using a join table.
+
+🟦 12. @JoinColumn -Specifies the foreign key column in a relationship.
+
+🟦 13. @JoinTable -Defines the mapping table used for many-to-many relationships.
+
+🟦 14. @Enumerated -Stores Java enums in DB as STRING or ORDINAL.
+
+🟦 15. @Embedded -Marks a value object to be embedded inside another entity.
+
+🟦 16. @Embeddable -Marks a class whose fields will be embedded into another table.
+
+🟦 17. @CreationTimestamp (Hibernate-specific) -Automatically sets timestamp when the record is created.
+
+🟦 18. @UpdateTimestamp (Hibernate-specific) -Automatically updates timestamp when the record is updated.
+
+🟦 19. @Where (Hibernate-specific) -Applies a filter to all queries of an entity.
+
+Example: @Where(clause = "is_deleted = false")
+
+🟦 20. @Formula (Hibernate-specific) -Allows calculation-based fields using a SQL formula.
+
+Example:
+@Formula("(salary * 12)")
+private Double yearlySalary;
+
+🟦 21. @NaturalId -Defines a business key (unique natural identifier).
+
+🟦 22. @Cacheable -Enables second-level caching for the entity.
+
+🟦 23. @Inheritance -Defines how inheritance is mapped to database tables.
+
+
+🟦 24. @PrePersist / @PreUpdate / @PostLoad
+
+Lifecycle callback methods executed:
+
+Before save
+
+Before update
+
+After load
+
+
+#FETCH TYPE
+########################3
+Hibernate uses fetch types to decide when related data should be loaded from the database.
+
+Two types of fetching:
+
+1.Lazy Loading (default)
+2.Eager Loading
+
+1. Lazy Loading (DEFAULT Behavior)  : In Lazy Loading, Hibernate loads the main entity first, and loads its related data only when it is actually 
+####################################   accessed.
+
+Analogy:
+You open a file, but it loads images/videos only when you scroll to that part.
+Purpose: Improves performance ,Reduces memory usage ,Avoids unnecessary queries
+
+Example:
+@OneToMany(mappedBy = "employee", fetch = FetchType.LAZY)
+private List<Address> addresses;
+
+2. Eager Loading :In Eager Loading, Hibernate loads the main entity along with all its related entities immediately, even if you do not need them.
+#################
+Analogy:
+You download an entire folder including all subfolders, even if you only need one file.
+Purpose:
+Useful when you always need child objects, Avoids lazy initialization exceptions if session is closed
+
+Example:
+@OneToMany(mappedBy = "employee", fetch = FetchType.EAGER)
+private List<Address> addresses;
+
+How it works:
+When you fetch Employee, Hibernate will also fetch Address list immediately.
+Often results in additional joins, increasing query time.
+
+What is the state of object in hibernate?
+#############################################
+“In Hibernate, an object goes through three main states: Transient, Persistent, and Detached. These states describe how Hibernate manages the object with respect to the database and session.”
+
+1. Transient State->
+Object is just created using new.   Not associated with any Hibernate Session.  Not stored in the database. Hibernate do not tracks changes
+ex -Employee e = new Employee();
+
+2. Persistent State ->
+Object is associated with a Hibernate Session. Hibernate tracks changes and automatically updates the DB (dirty checking).
+
+Achieved when calling:                ex- session.save(e);  // Now e is persistent
+save()
+persist()
+saveOrUpdate()
+
+3. Detached State ->
+Object was persistent earlier but Session is closed.
+Object still exists in memory, but Hibernate no longer tracks changes.
+Must use update() or merge() to attach it back.
+ex -session.close();  // e becomes detached
+
+
+What is Cache in Hibernate?
+###############################
+“Cache in Hibernate is a mechanism that stores frequently accessed data in memory to reduce database calls and improve application performance.”
+Hibernate provides two levels of caching.
+
+First-Level Cache
+#####################
+“In Hibernate, the first-level cache is built-in and works at the Session level. Every Session has its own cache.
+If I fetch the same entity again in the same session, Hibernate returns it from the cache instead of going to the database.
+This improves performance and reduces queries. It is mandatory and cannot be disabled.”
+
+Second-Level Cache
+##########################
+“The second-level cache works at the SessionFactory level and is shared across multiple sessions.
+It is optional — we have to enable it and configure a provider like Ehcache or Hazelcast.
+This cache is useful for data that is frequently read and doesn’t change often.”
+
+What is hbm2ddl.auto in Hibernate?
+######################################
+“hbm2ddl.auto is a Hibernate property used to control how Hibernate handles database schema creation and updates.”
+
+Used inside application.properties:
+
+What is @Transactional in Spring/Hibernate?
+################################################
+“@Transactional is used to manage database transactions automatically. When a method is marked with @Transactional
+Automatically commits on success and rolls back on exceptions.  Avoids manual beginTransaction() and commit() calls.
+
+
+how do we declare multiple primary key in hibernate?
+#######################################################
+In Hibernate, we declare multiple primary keys (a composite key) using either @EmbeddedId with an @Embeddable class or using @IdClass. The recommended approach is @EmbeddedId as it is cleaner and fully JPA-compliant.Method 1: Using @Embeddable + @EmbeddedId (MOST RECOMMENDED)
+
+✔ Step 1 — Create a separate class for composite key
+Use @Embeddable:
+
+@Embeddable
+public class OrderId {
+    
+    private int orderId;
+    private int productId;
+
+    // getters, setters, equals(), hashCode()
+}
+
+✔ Step 2 — Use this key inside your entity
+
+Use @EmbeddedId:
+
+@Entity
+public class Order {
+
+    @EmbeddedId
+    private OrderId id;
+
+    private int quantity;
+}
+
+What is Optional class?
+##########################
+Optional class:
+----------------
+-> Optional class was introduced in java version 8
+-> It is alternate way to handle null pointer exception
+
+

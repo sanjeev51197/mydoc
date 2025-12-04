@@ -1,0 +1,507 @@
+#What is Spring?
+###################
+“Spring is an open-source Java framework that helps developers build scalable, secure, and maintainable applications.
+The core idea of Spring is Dependency Injection, which makes your code loosely coupled.
+Spring is lightweight, modular, and provides many ready-made modules like Spring MVC, Spring Data JPA, Spring Security, and Spring Boot, which speed up development.”
+
+
+What is Dependency Injection (DI) ?
+#######################################################
+-> Dependency Injection is a design pattern used by Spring Boot to automatically create and manage objects (dependencies) your classes need — without you manually creating them.
+-> Dependency Injection is a technique where objects (dependencies) are injected into a class by the framework (Spring) at runtime rather than the   object creating them itself.
+
+In simple words:
+Class will not create its own objects — Spring will give those objects.  
+Analogy:
+------------
+Imagine you're building a house. You don’t make the bricks yourself — you ask someone to provide them.
+Similarly, Spring Boot provides the objects your app needs.
+
+
+Why Use DI?
+###############
+“We use DI to make the application loosely coupled, easier to test, easy to maintain, and to let Spring manage object creation instead of manual new() operations.”
+
+
+What is Loose Coupling?
+############################3
+Loose coupling means classes are independent of each other.
+ex -
+class StudentService {
+    private StudentRepository repo;
+
+    @Autowired
+    public StudentService(StudentRepository repo) { // dependency injected
+        this.repo = repo;
+    }
+}
+Now StudentService doesn’t care how repo is created.
+
+
+What is Tight Coupling?
+#########################
+Tight coupling means one class is highly dependent on another class’s implementation.
+The classes are strongly connected — if one changes, the other must change too.
+exex-
+class StudentService {
+    StudentRepository repo = new StudentRepository(); // tightly coupled   ,If Repository changes, you must modify StudentService.
+}
+
+
+What is Spring IOC(INVERSION OF CONTROL)?
+##############################################3
+-> Spring IOC Container is the core of the Spring Framework.
+-> It manages the lifecycle and Creation of application objects (called beans).
+-> It creates, configures, and wires objects automatically based on configuration
+-> Helps implement Dependency Injection (DI) easily.
+-> Promotes loose coupling because your classes don’t instantiate their dependencies directly.
+
+
+Spring Bean Life Cycle
+########################
+Bean is Created---->Dependencies Injected (@Autowired)----->Execution(Bean is use by the application)------>Destruction of the bean
+“A Spring bean goes through four phases:
+Spring creates the bean, injects dependencies using @Autowired, the bean is then used by the application, and finally Spring destroys it when the container shuts down. The entire lifecycle is automatically managed by the Spring IoC container.”
+
+
+
+What is Bean Scope?'
+#######################
+Bean Scope refers to the lifecycle and visibility of a bean — meaning how often a bean object is created and how long it will remain alive within the Spring container.
+Common Bean Scopes in Spring:
+
+1.Singleton(Default) - Only one instance per Spring container it is shared across all application
+
+2.Prototype - Creates a new bean instance every time it is requested
+
+3.Request (Web Only) -One bean instance per HTTP request
+
+4.Session (Web Only) -One bean instance per HTTP session
+
+5.Application (Web Only)- One bean instance per ServletContext
+
+
+what is Bean factory
+#####################
+BeanFactory is the basic Spring container responsible for creating and managing beans using lazy initialization. ApplicationContext is the advanced container.
+
+
+what is ApplicationContext?
+###########################
+ApplicationContext is the fully-featured Spring container that manages beans with advanced capabilities like AOP, event handling, and eager loading. It is preferred over BeanFactory in modern Spring applications
+
+
+Types of Dependency Injection (DI) in Spring
+################################################
+
+1️⃣ Constructor Injection (Recommended) -Dependencies are injected through the constructor.
+
+2️⃣ Setter Injection - Dependencies are injected using setter methods.
+
+3️⃣ Field Injection -Spring injects dependencies directly into fields using @Autowired.
+
+
+Why We Use Constructor-Based Dependency Injection?
+###################################################
+Constructor-based DI is considered the best practice in Spring because it provides stronger safety, clarity, and testability.
+“Constructor-based DI is preferred because it makes dependencies mandatory, promotes immutability, prevents null values, and makes unit testing easy.
+Promotes Immutability means-  All dependencies are final and cannot be changed after object creation.
+mandatory dependencies means -If Repo is missing, the class cannot be created, preventing runtime errors.
+
+
+Why Don’t We Use @Autowired (Field Injection) in Modern Spring?
+####################################################################33
+We avoid @Autowired on fields because it makes the class hard to test, hides dependencies, prevents immutability, and tightly couples code to Spring.
+
+
+What is JPA?
+#####################3
+JPA (Java Persistence API) is a specification provided by Java for ORM (Object Relational Mapping).
+It defines how Java objects should be mapped to database tables and how to perform CRUD operations in an object-oriented way.
+
+
+What is Spring Data JPA?
+##########################
+“Spring Data JPA makes database operations very easy. Instead of writing repository classes, SQL, or EntityManager code, we simply create a repository interface extending JpaRepository, and Spring automatically provides all CRUD opearation , pagination, and derived queries. It reduces boilerplate and speeds up development.”
+ex-
+public interface StudentRepository extends JpaRepository<Student, Integer> {
+}
+
+By default, Spring Data JPA uses Hibernate as the ORM (Object Relational Mapping) tool in Spring Boot applications (unless you configure another JPA provider manually).
+
+
+
+What is Spring Profile?
+###########################
+Spring Profile is a feature in Spring that allows you to separate and manage different configurations for different environments like:dev,test,stage,prod
+
+How to Activate a Profile?
+ans -Using properties file              add  -> spring.profiles.active=dev
+
+
+What is Spring MVC?
+##########################
+-> Spring MVC stands for Spring Model-View-Controller.
+—> It's a web framework in the Spring used to build web applications using the MVC design pattern.
+
+
+How Spring MVC Work?
+######################
+“In Spring MVC, every request first goes to the DispatcherServlet. It finds the appropriate controller using HandlerMapping, executes the controller logic, and returns a Model and view name. The ViewResolver converts the view name to the actual page, the view is rendered with model data, and the final response is sent back to the client.”
+
+
+1. DispatcherServlet
+#########################
+“DispatcherServlet is the front controller of Spring MVC. Every incoming HTTP request first goes to DispatcherServlet, and it routes the request to the appropriate controller.”
+
+
+2. Controller
+################
+“A Controller is a class that handles HTTP requests. It has methods mapped using @GetMapping, @PostMapping, etc.” 
+It Acts as mediator layer in MVC Architecture 
+
+
+3. @Controller vs @RestController
+######################################3
+@Controller → It returns views (HTML, JSP, Thymeleaf)
+
+@RestController → It returns JSON/XML (REST APIs)
+
+
+4. Model
+###############
+"Model is used to pass data from Controller to the View." Model in Spring is an interface, not a class
+
+Example:
+model.addAttribute("name", "Sanjeev");
+
+5. ViewResolver
+#####################
+“ViewResolver maps the logical view name returned by the controller to the actual View page.”
+
+Example:
+Controller returns → "home"   
+ViewResolver maps → /WEB-INF/views/home.jsp       //actual view page
+
+
+6. View
+#######
+“The View is the UI layer that displays data, like JSP, Thymeleaf, HTML.”
+
+
+7. @RequestMapping
+################# 
+“ It’s a Spring MVC annotation used to map HTTP requests to handler methods or classes in your controller.
+ex -@RequestMapping("/login")      Now it is replaced by Getmapping .Postmapping,Putmapping,Deletemapping  
+
+
+8. @ModelAttribute
+##################
+“@ModelAttribute binds form data (UI input) to a model object automatically.
+
+ex -public String save(@ModelAttribute User user)
+
+
+9. @RequestParam
+################
+“ It Used to fetch data from URL query parameters and passes them into your controller method."
+ex- @GetMapping("/search")
+public String search(@RequestParam String keyword)
+
+
+10. @PathVariable
+#################
+“ It Used to fetch values from the URL path.”
+
+ex-@GetMapping("/user/{id}")
+public String getUser(@PathVariable int id)
+
+
+11. HandlerMapping
+##################
+“HandlerMapping finds the correct controller method for incoming requests.”
+
+It works inside DispatcherServlet.
+
+🔥 12. HandlerAdapter
+######################
+“HandlerAdapter helps DispatcherServlet to execute the matched controller method.”
+
+
+What is ModelMap in Spring MVC?
+###############################
+a. ModelMap is a special object provided by Spring MVC to pass data from your controller to the view layer (like JSP, Thymeleaf, etc.).
+b. It behaves like a Map (key-value pairs)
+
+what is JSTL tags?
+##################
+-> Using JSTL we can write java code in the form of tags inside JSP pages
+-> This makes non java developer to embed java code inside JSP
+
+
+What is Spring Initializr?
+##############################
+Spring Initializr is an online tool provided by Spring (https://start.spring.io/
+) that helps developers quickly generate a Spring Boot project with all required dependencies.
+
+
+
+What is Spring boot
+################################
+
+Spring Boot is an open-source Java-based framework used to create stand-alone applications quickly and easily with minimal configuration.
+
+Spring Boot Stand-Alone Application:
+-------------------------------------------
+-> You just run a main() method like any regular Java program.
+-> It includes an embedded server (e.g., Tomcat) in the application itself.
+-> No need to install or configure any external server separately.
+
+Note: Since Spring boot is stand alone application, we package the application as jar file
+
+
+Spring Boot Workflow (Short Answer)
+#####################################
+You run the Spring Boot app → main() executes
+SpringApplication.run() starts the Spring context
+Auto-configuration configures beans
+Embedded Tomcat starts
+Your controllers/services/repos load
+Application becomes ready to receive requests
+
+
+
+ What is @Service?
+######################
+a. @Service is a Spring stereotype annotation.
+b. It marks a class as a Service component in the Service Layer of your application.
+c. Spring will detect it during component scanning and create an instance (bean) of that class in the Spring IOC container
+d. It makes your class eligible for dependency injection.
+
+ What is @Component?
+####################
+a. @Component is a generic Spring annotation to mark a class as a Spring-managed bean.
+b. When you annotate a class with @Component, Spring will detect it during component scanning and create an instance (bean) of that class in the Spring IOC container.
+c. It makes your class eligible for dependency injection.
+
+
+what is @SpringBootApplication
+##############################
+It is the Main annotation used to mark the entry point of a Spring Boot application.
+It is a combination of: @Configuration ,@EnableAutoConfiguration and @ComponentScan
+Purpose:
+It Starts auto-configuration, component scanning, and bootstraps the app.
+
+
+What is @Configuration
+################
+It Marks a class that contains bean definitions. It Equivalent to XML-based configuration.
+
+
+What is @Bean
+#############
+It Used inside @Configuration classes to create custom beans manually.
+
+
+What is @Repository
+#####################
+It Marks a class as DAO (Data Access Layer).
+
+
+What is a Web Service?
+########################
+A Web Service is a software component that allows two applications to communicate with each other over a network (like the Internet) using standard protocols.  It enables machine-to-machine communication.
+Example:
+A mobile app calling a server to get user details
+A billing system communicating with an order system
+
+
+
+1. SOAP Web Services (Simple Object Access Protocol)
+###################################################
+SOAP is a protocol that uses XML for data exchange and follows strict standards for communication. Often used in banking, telecom, enterprise systems.
+
+
+2. RESTful Web Services (Representational State Transfer)
+##########################################################
+REST is an architectural style for building lightweight web services that use HTTP methods (GET, POST, PUT, DELETE) to perform CRUD operations.
+Features-
+Uses JSON (mostly), also XML
+Lightweight and fast
+Best suited for web, mobile apps, and microservices
+
+
+
+Simple Definition
+##################
+Web Service is a mechanism that enables communication between applications over a network. There are two types: SOAP (protocol-based) and REST (architecture-based). RESTful web services are lightweight, fast, stateless services that use HTTP methods and usually return JSON data.
+
+
+
+What is @RestController in Spring Boot?
+########################################
+@RestController is a Spring annotation that is used to create RESTful web services that return data in JSON format
+
+It is a combination of:  @Controller  and  @ResponseBody
+
+This means:
+✔ It handles HTTP requests (GET, POST, PUT, DELETE)
+✔ It returns data (JSON/XML) directly to the client
+✔ No need to return a view (HTML/JSP)
+🧠 Why do we use @RestController?
+
+It is used To build REST APIs quickly
+It Automatically converts Java objects → into  JSON using Jackson
+W don't need to write @ResponseBody on every method
+It Ideal for microservices
+
+Definitions
+###############
+a. ResponseEntity helps us send both the required HTTP status code and response data (usually in JSON format).
+
+b. @RequestBody is an annotation in Spring used to bind the HTTP request body (usually in JSON format) to a Java object.
+
+c. @RestController It is used to create RESTful web services that return data in JSON format
+
+d. @PostMapping is a Spring MVC annotation used to handle HTTP POST requests.
+   It is typically used when you want to submit or create new data, such as inserting a record into the database.
+
+What is Status Code
+###################
+Status codes in Spring Boot are HTTP response codes (like 200, 400, 404, 500) sent by the server to indicate success, client error, or server error in a request.
+
+Status Code: 201 It  indicates that a resource has been successfully created as a result of a POST request.
+
+Status Code: 200 – OK --> means The request was successful, and the server has returned the expected response.
+
+Status Code: 404 – Not Found --> means The resource the client is trying to access does not exist on the server.
+
+Status Code : 500 – Internal Server Error  means --> The server encountered an unexpected error while processing the request.
+Causes:
+NullPointerException
+Database connection error
+
+Status Code : 403 – Forbidden  --> means The server understood the request, the resource exists, but the client is not allowed to access it. because User does NOT have required permissions 
+This is an authorization error, not an authentication error. 
+
+
+What is Spring Boot @Value Annotation?
+#########################################
+“@Value is a Spring annotation used to inject values into fields — such as properties from application.properties, environment variables, system properties, or even literal values.
+
+ex- Inject from application.properties             
+
+@Value("${app.name}")                               
+private String appName;  
+
+Inject a hard-coded value
+@Value("Hello World")
+private String msg;
+
+
+What is @Qualifier in Spring?
+###############################
+@Qualifier is used in Spring to resolve ambiguity when more than one bean of the same type exists. It tells Spring which specific bean to inject when multiple choices are available.
+
+
+What is Postman?
+################
+Postman is a popular API testing tool used to send requests and receive responses from REST APIs.
+It helps developers test APIs without writing any front-end code.  
+
+
+What is Idempotent?
+####################
+Idempotent means:  An operation that gives the same result, no matter how many times you repeat it.
+
+In REST APIs, an HTTP method is idempotent if calling it once or multiple times produces the same effect on the server.
+GET method ,PUT METHOD , DELETE are idempotent method but POST is non-idempotent because calling multiple times it produces multiple record.
+
+
+What is Spring Boot Actuator?
+#############################
+Spring Boot Actuator is a built-in module in Spring Boot that provides production-ready monitoring and management features for your application.
+It helps DevOps, developers, and monitoring tools understand the app’s status.
+It provides REST endpoints to monitor, manage, and get diagnostic information about your Spring Boot application in real time.
+
+
+
+What is application.properties in Spring Boot?
+#############################################
+application.properties (or application.yml) is the main configuration file in a Spring Boot application.
+
+It is used to configure application-level settings such as: Server port ,Database connection ,Logging ,Profiles ,Security
+Spring Boot automatically reads this file at startup.
+
+
+
+XML vs JSON
+###############
+XML is a tag-based structured format suitable for complex data and used in SOAP-based web services.
+JSON is a lightweight, fast, and easy-to-read format widely used in REST APIs for data exchange.
+
+
+
+How to Send Email in Spring Boot?
+#################################
+To send an email in Spring Boot, we use the spring-boot-starter-mail dependency. It provides JavaMailSender, which allows us to send simple and MIME emails using SMTP configuration.
+
+Email Configuration in application.properties
+For example (Gmail SMTP):
+
+spring.mail.host=smtp.gmail.com
+spring.mail.port=587
+spring.mail.username=yourgmail@gmail.com
+spring.mail.password=your-app-password
+spring.mail.properties.mail.smtp.auth=true
+spring.mail.properties.mail.smtp.starttls.enable=true
+
+Note: Use App Password, not your Gmail login password
+
+How do we use Global Exception Handling in Spring Boot?
+########################################################
+In Spring Boot, Global Exception Handling allows you to handle all exceptions in one centralized place instead of writing try–catch in every controller.
+We use @ControllerAdvice + @ExceptionHandler to achieve this.
+
+
+When do we use @Valid in Spring Boot?
+######################################
+We use @Valid when we want to perform validation on incoming data (usually request body or form input) before processing it.
+Spring Boot will automatically check all validation rules (like @NotNull, @Email, @Size, etc.) inside your DTO.
+
+What happens when validation fails?   --->   Spring returns a 400 Bad Request with validation error messages.
+
+Where can @Valid be applied?
+#############################
+| Where?           | Example                              |
+| ---------------- | ------------------------------------ |
+| Request Body     | `@Valid @RequestBody UserDTO`        |
+| Path Variable    | `@Valid @PathVariable`               |
+| Query Parameter  | `@Valid @RequestParam`               |
+| Method arguments | `public void save(@Valid User user)` |
+
+
+What does @SpringBootApplication do?
+####################################
+@SpringBootApplication is a combination of three important Spring annotations:
+✅ @Configuration - It Marks the class as a configuration class where Spring can define beans.
+
+✅ @EnableAutoConfiguration -
+
+Enables Spring Boot’s auto-configuration, which automatically configures beans based on dependencies in the classpath.
+(Example: If spring-boot-starter-web is present → Spring auto-configures DispatcherServlet, Tomcat, JSON converters, etc.)
+
+✅ @ComponentScan -  Enables component scanning so Spring can detect:
+
+@Controller
+@Service
+@Repository
+
+Why do we use it?
+#################
+✔ To start Spring Boot application
+✔ To enable auto configuration
+✔ To avoid writing XML configuration
+✔ To auto-detect beans and components
+✔ To reduce boilerplate code
+

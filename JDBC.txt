@@ -1,0 +1,106 @@
+What is JDBC?
+#################
+JDBC (Java Database Connectivity) is a Java API used to connect and interact with relational databases like MySQL, Oracle, PostgreSQL, SQL Server, etc.
+It allows Java applications to:
+Connect to a database
+Execute SQL queries
+Retrieve and update data
+Manage transactions
+
+
+Steps to Connect to a Database Using JDBC
+#########################################
+
+1️⃣ Load and Register the JDBC Driver       -   Class.forName("com.mysql.cj.jdbc.Driver");
+
+2️⃣ Create a Connection         -            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb","root","password");
+
+3️⃣ Create a Statement / PreparedStatement    - PreparedStatement ps = con.prepareStatement("SELECT * FROM employee WHERE id = ?");
+                                          ps.setInt(1, 101);
+
+4️⃣ Execute the Query       -               ResultSet rs = ps.executeQuery();
+
+5️⃣ Process the Results      -               while(rs.next()) {
+                                        System.out.println(rs.getString("name"));
+                                        }
+6️⃣ Close the Connection   -                rs.close(); ps.close(); con.close();
+
+
+What is Statement in JDBC?
+##########################
+It Used to execute simple SQL queries without parameters.   ex-Statement st = con.createStatement();
+
+
+
+What is PreparedStatement in JDBC?
+#####################################
+PreparedStatement is an interface in JDBC that allows you to execute parameterized SQL queries.
+
+
+Why PreparedStatement is used?
+################################
+1. Prevents SQL Injection (MOST IMPORTANT)
+Instead of concatenating strings:
+String query = "SELECT * FROM employee WHERE id = " + id;         //bad practise   
+
+PreparedStatement ps = con.prepareStatement("SELECT * FROM employee WHERE id = ?");            //this is safe
+ps.setInt(1, id);
+
+2.Supports Parameterized Queries   -> Use ? placeholders and set values:
+
+
+What is ResultSet?**
+####################
+It represents the data returned from SQL query execution.
+
+
+
+Difference: Statement vs PreparedStatement
+###########################################
+| Statement                   | PreparedStatement           |
+| --------------------------- | --------------------------- |
+| SQL is compiled every time  | Precompiled once            |
+| Vulnerable to SQL injection | Safe                        |
+| Cannot use `?`              | Uses parameter placeholders |
+| Lower performance           | High performance            |
+
+
+What is RowMapper?
+##################
+It Used to map each row of ResultSet to a Java object.
+
+
+What is CallableStatement?
+###############################
+It is Used to call stored procedures from the database.
+ex- CallableStatement cs = con.prepareCall("{call getSalary(?)}");
+
+
+What is Connection Pooling?
+###########################
+It is A pool of reusable database connections.
+It Improves performance by avoiding repeated connection creation.
+
+Frameworks:
+HikariCP (Spring Boot default)
+DBCP
+C3P0
+
+What happens if we don't close JDBC connection?
+###############################################
+Memory leak
+Connection pool exhaustion
+DB performance degrade
+Application crash
+
+
+Why JDBC is slow in large applications?
+#######################################
+Because:
+Opens new connection every time
+No ORM features
+Manual SQL writing
+No caching
+No lazy loading
+
+This is why we use Spring Data JPA / Hibernate.

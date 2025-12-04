@@ -1,0 +1,1531 @@
+🟦 What is Minikube?
+
+Minikube is a lightweight Kubernetes that runs on your local computer.
+It creates a single-node Kubernetes cluster (both master + worker on your laptop).
+which means everytrhing will be in one place.
+
+✔️ Good for beginners
+✔️ Good for testing/development
+✔️ Doesn’t need cloud (AWS/GCP/Azure)
+🟩 Why do we use Minikube?
+
+Minikube lets you learn and test Kubernetes without real servers.
+
+With Minikube you can:
+
+Deploy Pods, Deployments, Services
+
+Test NodePort, ClusterIP, LoadBalancer
+
+Try Ingress, ConfigMaps, Secrets, PVC
+
+Practice kubectl commands
+
+Learn real Kubernetes behavior locally
+
+It works exactly like real Kubernetes clusters, so your knowledge transfers directly.
+
+==========================================================================================================================================
+Setup
+launch an instance with name vm_minicube -> select ubuntu -> 4gb ram 50 gb ROM-> devopskeypair > config storage 50 gb ->securitry grp-1 -> Launch 
+
+Now connect your ec2 from Bash.
+--------------------------------------------------------------------------------------------------------------------
+#install docker in ubuntu vm
+   
+  sudo apt update
+curl -fsSL get.docker.com | /bin/bash
+sudo usermod -aG docker ubuntu 
+exit
+
+->check docker version  -> docker --version 
+
+#install java ->
+ 
+sudo apt install openjdk-17-jdk -y
+
+
+
+#now install minicube depencies 
+ sudo apt update
+sudo apt install -y curl wget apt-transport-https
+
+--------------------------------------------------------------------------------------------------------------------
+
+#now install minicube      -It is a single cluster node which has everything like workernode 
+
+curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+
+sudo install minikube-linux-amd64 /usr/local/bin/minikube
+
+minikube version
+
+-------------------------------------------------------------------------------------------------------------------------
+#Install Kubectl -> it will provide the instructions to Control plane and control plane will do required things on worker node
+curl ->command will send an http request and it gets the response
+
+curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
+chmod +x kubectl
+sudo mv kubectl /usr/local/bin/
+kubectl version -o yaml
+
+-------------------------------------------------------------------------------------------------------------------------------
+#Start the Minicube Server
+
+minikube start — driver=docker
+
+------------------------------------------------------------------------------------------------------------------------------------
+#Check Minicube status
+
+command ->minikube status
+
+output-
+
+type: Control Plane
+host: Running
+kubelet: Running     (its a part of node)
+apiserver: Running   
+kubeconfig: Configured
+
+
+--------------------------------------------------------------------------------------------------------------------------------------
+#Access KubeCtl cluster
+
+kubectl cluster-info
+
+
+output-
+Kubernetes control plane is running at https://192.168.49.2:8443
+CoreDNS is running at https://192.168.49.2:8443/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+
+
+---------------------------------------------------------------------------------------------------------------------------------------
+#Access K8S Nodes
+
+ command-> kubectl get nodes
+
+output-
+
+NAME       STATUS   ROLES           AGE     VERSION
+minikube   Ready    control-plane   4m21s   v1.34.0           it is by default created . but now we ll create our own worker node
+
+
+-----------------------------------------------------------------------------------------------------------------------------------
+
+===================================================================================================================================
+now we'll create Pods
+for that we'll create a YAML file     use Yamllint.com    to check its valid or not
+
+because all the instructions which we are providing to control plane will be in YAML file.
+
+simple way to create this using vs code.
+
+create a folder in local system -> create a file and rename it using yaml syntax -> click on path and type cmd -> under cmd write code . enter
+
+
+Now we'll create a yaml file using which we ll create pods bacuse without pods we can't create a container
+
+🟦 Basic Pod Manifest (Example)-
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-pod
+  labels:
+    app: myapp
+spec:
+  containers:
+    - name: myapp-container
+      image: nginx
+      ports:
+        - containerPort: 80
+
+---------------------------------------------------------------------------------------------------------------------------------
+🟩 FULL EXPLANATION (Every Line Explained)
+🔷 1. apiVersion            
+apiVersion: v1      -Tells Kubernetes which API version this object uses.     For Pods → always v1.
+
+
+🔷 2. kind
+kind: Pod      -Specifies what you want to create.   Here → Pod    .(Other options could be Deployment, Service, etc.)
+
+
+🔷 3. metadata
+metadata:
+  name: my-first-pod
+  labels:
+    app: myapp
+
+metadata.name
+
+Name of the pod.
+
+Must be unique inside a namespace.
+
+metadata.labels
+
+Labels are like “tags”.
+
+Used by Services, Deployments, etc., to find this pod.
+
+Example label: app: myapp
+
+🔷 4. spec
+spec:
+  containers:
+
+
+spec tells Kubernetes the actual configuration.
+
+🔷 5. containers section
+A Pod can have 1 or more containers.
+
+Here only one container is inside the pod.
+
+containers:
+  - name: my-container
+    image: nginx:latest
+    ports:
+      - containerPort: 80
+
+➤ name
+name: my-container
+
+
+Name of your container inside the pod.
+
+➤ image
+image: nginx:latest
+
+ 
+Which Docker image to run.
+
+➤ containerPort
+containerPort: 80
+
+
+Container is listening on port 80
+
+Mainly used for documentation and service discovery
+
+
+========================================================================================================================================
+pod.yml    ->  this yml file is instructions to kubectl
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: testpod
+  labels:
+    app: demoapp
+spec:
+  containers:
+    - name: test
+      image: sanjeev51197/test:demotest-v1              //because in my docker hub only testing-v1 image is available 
+      ports:
+        - containerPort: 9090
+...
+--------------------------------------------------------------------------------------------------------------------------------------------
+
+i'll just go online to our server and create a yml file 
+-> vi pod.yml            and copy paste insert the yml instruction above which is there  and save  
+
+
+# ill now tell to kubectl to go ahead and create the pod.   for that execute the manifest that ie pod.yml file
+
+->kubectl apply -f pod.yml
+
+output-  pod/testpod created
+
+#check pods  it will list all pods that is available in current setup
+-> kubectl get pods
+
+
+#check logs it will pull the image from dockerhub and give the status
+
+-> kubectl logs testpod
+
+
+# to check all the details about the pods like kubelet pulling image ,container creasted ,started ,image size etc.
+
+->kubectl describe pod testpod
+
+
+=========================================================================================================================
+#Accessing the pod is not allowed directly because pods ip is not constant it is short lift ,it might crash .if your pods stops and starts ip 
+ address will be changed .
+In order to use the port we have to use services
+
+#we have three type of services
+1.Cluster Ip
+2.Node port
+3.Load balancer
+
+#to access that we'll create a yml in which we'll define a service . which will access the pod
+
+for that   
+-> vi service.yml      and insert the line
+->
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: testpod-service
+spec:
+  type: NodePort
+  selector:
+    app: demoapp           # This must match the Pod's label
+  ports:
+    - port: 80             # Exposed port for external access
+      targetPort: 9090     # Port on which the app is running inside the container   //check the application properties of your springbootapp
+      nodePort: 30080      # External port exposed on each node     .this will help to run the container . 
+...
+
+------------------------------------------------------------------------------------------------------------------------------------------
+#Run the service.yml
+
+->kubectl apply -f service.yml  
+
+#check that service
+
+->kubectl get svc    or kubectl get services
+
+output-
+
+NAME              TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)        AGE
+kubernetes        ClusterIP   10.96.0.1        <none>        443/TCP        149m      //we did not create clustorIp.
+testpod-service   NodePort    10.107.217.117   <none>        80:30080/TCP   70s      //we created NodePort
+
+
+#Get the Ip address of minikube
+->minikube ip
+
+=192.168.49.2               
+
+-----------------------------------------------------------------------------------------------------------------------------
+#TESTING
+
+we'll use a curl command
+
+curl http://192.168.49.2:30080                
+
+ curl    http    ://    minikube ip        :   nodeport
+
+output-
+ubuntu@ip-172-31-9-92:~$ curl http://192.168.49.2:30080
+Hello Sanjeev thanks for using kubernates minikubeubuntu@ip-172-31-9-92:~$
+
+Notes==
+curl  -	A tool to make HTTP requests from the command line. It's often used to test whether a URL is reachable and what it returns.
+http://192.168.49.2	This is the IP address of the Minikube VM. It's the entry point into your Kubernetes cluster from your host machine. You found this IP using minikube ip.
+:30080	This is the NodePort exposed by your Kubernetes service (testpod-service). It forwards external requests to the internal Pod’s port (8080 in your case).
+/	This is the path of the URL. Since it's just a /, it hits the root endpoint of your Spring Boot app.
+
+
+-----------------------------------------------------------------------------------------------------------------------------------
+
+DELETION
+
+pod  -> kubectl delete pod testpod
+
+service - > kubectl delete svc testpod-service
+
+===================================================================================================================================
+#minicube gives single node cluster means control plane .worker node everything is given
+
+#############
+Stop complete minikube
+#################
+
+-> minikube stop
+-> minikube delete
+-> minikube status
+
+
+#####################
+To see all resources running
+####################
+
+-> kubectl get all
+
+########################
+To delete all resources use
+########################
+-> kubectl delete all --all
+
+
+=======================================================================================================================================
+
+✅ What are Namespaces in Kubernetes(K8S)?
+
+Namespaces are like folders inside Kubernetes
+They help you organize, group, and isolate your resources.
+> They help logically group and isolate resources. Just like how we create folders to isolate our work in computers.
+
+When your Kubernetes cluster becomes big (many teams, many apps), namespaces prevent confusion by separating things.
+
+🧠 Simple understanding:
+
+📌 Namespace = Folder
+📌 Pod/Service/Deployment = Files inside that folder
+
+If you put everything in one namespace → mess.
+
+Example:
+-----------------
+
+database-ns = all database-related stuff
+
+backend-ns = for backend applications
+
+- frontend-ns
+- logging-ns
+- monitoring-ns
+
+Each namespace contains its related resources like Pods, Services, ConfigMaps etc.
+
+Note: If we donot specifiy name space they k8S will automatically provide default name - space
+
+-----------------------------------------------------------------------------------------------------------------------------------------
+
+Whenever we create a pod by default namespace  is present here .. to see that use ->kubectl get ns
+
+
+#now w'll create a namespace
+-> kubectl create namespace backend-ns      . now this backend-ns will act like a folder where we'll keep the resources
+
+#we can also create namespace using a yml file. if you don't want to use command then use yml
+
+-> vi namespace.yml
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+ name: backend-ns-2     //keep 2 because first one created by command   
+... 
+
+after that
+-> kubectl apply -f namespace.yml
+
+
+#Now we'll create Namespace with POD with Service creation yml file
+
+-> vi ns-example.yml 
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+ name: backend-ns-3
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: testpod
+  namespace: backend-ns-3
+  labels:
+    app: demoapp
+spec:
+  containers:
+    - name: test
+      image: sanjeev51197/test:demotest-v1
+      ports:
+        - containerPort: 9090
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: testpod-service
+  namespace: backend-ns-3
+spec:
+  type: NodePort
+  selector:
+    app: demoapp           # This must match the Pod's label
+  ports:
+    - port: 80             # Exposed port for external access
+      targetPort: 9090     # Port on which the app is running inside the container
+      nodePort: 30080      # External port exposed on each node
+...
+
+
+->kubectl apply -f ns-example.yml
+
+output-
+creasted backend-ns-3
+created testpod
+created testpod-service
+
+
+#TO check all resource in backend-ns-3
+------------------------------------------
+kubectl get all -n backend-ns-3
+
+
+after that  -
+-> minikube ip
+then -> ubuntu@ip-172-31-9-92:~$ curl http://192.168.49.2:30081
+
+NodePort -> is a type of Service in Kubernetes that exposes your application to the outside world using a port on the Node's IP.
+
+In simple words:
+
+👉 “NodePort opens a port on every Kubernetes node so you can access your app from outside the cluster.”
+
+Above created everything in one yml file instead of doing step by step .we created all the resource in one folder that namespace which backend-ns-3
+
+
+#To delete a namespace  (when you delete a namespace its pods will also deleted)
+
+->kubectl delete ns backend-ns-3
+
+now check whether it is deleted or not?
+
+-> kubectl get ns
+
+
+#TO check is there any pods in backend-ns-3 or not?
+-> kubectl get pods -n backend-ns-3
+
+
+#to check all the available pods
+
+-> kubectl get pods
+
+
+
+
+
+
+Commands
+###################
+
+list all name spaces
+----------------------
+-> kubectl get ns
+
+list all pods in given name space
+-----------------------------------
+-> kubectl get pod -n <name-space>
+
+
+How to create name space in k8s
+#############################################
+
+1. Using kubectl command-
+kubectl create namespace backend-ns
+
+2.using manifest yml file 
+
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+ name: backend-ns
+... 
+
+# execute manifest yml
+kubectl apply -f <yml-file-name>
+
+# get all resources belongs to backend-ns namespace
+kubectl get all -n backend-ns
+
+#get all pods in kube-system
+kubectl get pods -n kube-system
+
+#get all worker nodes
+kubectl get nodes
+
+#delete name space - All resource related to that will be deleted
+kubectl delete ns backend-ns
+
+#Open tunnel
+minikube service <service-name>
+
+------------------------------------------------------------------------------------------------------------------
+######### NodePort range → 30000–32767
+whatever we have done we will not deploy our application this way. this was just for practice purpose.
+
+#KUBERNATES RESOURCES
+========================
+🌟 Why We Need Kubernetes Resources? (Very Simple)
+👉 When you create a Pod directly (kind: Pod)—  K8s does NOT manage it.
+
+If Pod crashes → it will NOT restart automatically
+
+If Pod is deleted → its gone forever
+
+ there is No scaling
+
+No rolling update
+
+and No rollback
+
+✔ That’s why we use higher-level Kubernetes resources to manage Pods.
+
+
+k8S Resources
+########################################
+
+-> When you create a Pod directly using kind: Pod, Kubernetes does not manage its lifecycle — if it crashes or is deleted, it's gone forever unless recreated manually.
+
+-> K8S resources manages POD lifecycle
+
+-> To let Kubernetes manage, restart, and scale Pods, we use higher-level controllers like the ones you listed.
+
+🔁 1) ReplicationController (RC)
+🔁 2) ReplicaSet (RS)
+🚀 3) Deployment
+🛰 4) DaemonSet
+💾 5) StatefulSet
+
+
+#####################################
+1.📦 What is ReplicationController (RC)?
+A Kubernetes resource used to manage the lifecycle of Pods.
+
+It Ensures a specified number of Pods are always running.
+
+it Provides self-healing — if a Pod crashes or is deleted, RC will recreate it.
+
+manifest yml file         // ->  vi repcontroller.yml           
+
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+ name: webapp
+spec:
+ replicas: 3
+ selector:
+  app: demopapp
+ template:
+  metadata:
+   name: testpod
+   labels: 
+    app: demopapp
+  spec:
+   containers:
+    - name: webappcontainer
+      image: sanjeev51197/test:demotest-v1
+      ports:
+      - containerPort: 9090
+...
+
+
+//here we are providing 3 replicas it will dynamically create pods name like testpod-xyz ,testpod-reuw etc
+
+->kubectl apply -f repcontroller.yml
+
+#To check how many pods are created 
+
+-> kubectl get pods
+
+webapp-mrjz2   1/1     Running   0          112s
+webapp-wn5nh   1/1     Running   0          112s
+webapp-zmpgb   1/1     Running   0          112s
+
+#lets say one pod gets down ..
+first to delete a pod
+
+-> kubectl delete pod webapp-mrjz2       once the pod is deleted
+
+
+now check pods 
+->kubectl get pods   
+
+again one pod is created .. so it is managing the pods with same nodeportno    
+
+#now if want to increase or scaleup the pods inside the repcontroller  //earlier it was 3   //webapp is name the name of app inside repcontroller.yml
+---------------------------------------------------------------------
+
+-> kubectl scale rc webapp --replicas=5
+
+output-
+ubuntu@ip-172-31-9-92:~$ kubectl scale rc webapp --replicas=5
+replicationcontroller/webapp scaled
+
+#means we have right now 5 containers 
+kubernate is doing the management of docker containers thats why it is called as orchestration software.
+
+docker is a containerization software.
+deployment of application will be done by kubernates in company . not only by docker.
+
+=============================================================================================================================================
+2. ReplicaSet 
+--------------
+⭐ 1. What is a ReplicaSet?
+
+👉 ReplicaSet (RS) is a Kubernetes controller that ensures a specified number of identical Pods are running at all times.
+
+
+💡 Key Features:
+Self-healing: If a Pod crashes or is manually deleted, the RS will automatically create a new Pod to maintain the desired number.
+
+Scaling: You can increase or decrease the number of replicas (Pods) easily.
+
+Selector-based matching: ReplicaSet manages only those Pods that match its label selector.    
+
+
+⭐ 2. Why ReplicaSet was introduced? (Very Important)
+
+ReplicaController had limited selector support.
+ReplicaSet supports set-based selectors, e.g., In, NotIn, Exists.
+
+✔ More powerful
+✔ More flexible
+✔ Used internally by Deployment
+
+
+whenever you are giving version to replicaset you have to give like this   ->   apps/v1    .
+you can't give it directly like v1 when we were creating pods
+
+
+#In replicacontroller name of app and selector should be same to register with service
+
+#but in ReplicaSet has a feature
+to select the pod using selector match using IN opearator  it will have a common key that is app.
+so with this key -i.e app   using IN operator we can register the pods with different name and register with service
+
+----------------------------------------------------------------------------------------------------------------------------
+
+-> vi replicaset-example.yml
+
+---
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: webapp
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: demopapp         # Must match pod template labels
+  template:
+    metadata:
+      labels:
+        app: demopapp
+    spec:
+      containers:
+        - name: webappcontainer
+          image: sanjeev51197/test:demotest-v1
+          ports:
+            - containerPort: 9090
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: webappservice
+spec:
+  type: NodePort
+  selector:
+    app: demopapp           # Must match pod labels
+  ports:
+    - port: 80
+      targetPort: 9090
+      nodePort: 30095
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------
+after that
+ubuntu@ip-172-31-9-92:~$ kubectl apply -f replicaset-example.yml
+replicaset.apps/webapp created
+service/webappservice created
+
+ubuntu@ip-172-31-9-92:~$ minikube ip
+192.168.49.2
+
+ubuntu@ip-172-31-9-92:~$ curl http://192.168.49.2:30095
+Hello Sanjeev thanks for using kubernates minikubeubuntu@ip-172-31-9-92:~$
+
+
+
+===============================================================================================================================================
+
+3.######################################
+✅ Deployment in Kubernetes
+######################################
+
+A Deployment is used to manage the lifecycle of Pods in a controlled and reliable way.
+It automatically creates a ReplicaSet, maintains the desired number of Pods, performs rolling updates without downtime, and supports rollback if something fails.
+
+KEY FEATURES- 
+
+1.A Rolling Update is a Kubernetes Deployment feature that updates Pods gradually, one by one, without stopping the application.
+This ensures ZERO downtime.
+
+How it works:
+
+Old Pods are deleted one at a time
+New Pods are created one at a time
+Users can still access the application during the update
+Kubernetes keeps the app running with minimum disruption
+
+
+2. Rollback means reverting the Deployment back to the previous stable version if the new update fails.
+
+Why rollback happens?
+
+New version has a bug
+Pods crash
+Application becomes slow
+Health checks fail
+Kubernetes automatically keeps a history of old ReplicaSets, so rollback is easy.
+
+
+🎯 Key Advantages of Using Deployments---
+Zero Downtime: Deployments ensure high availability by using strategies like rolling updates. Even when pods are being updated, the service remains available to users.
+
+Auto Scaling: With Kubernetes Horizontal Pod Autoscaler, you can automatically scale your Pods based on CPU or memory usage (or other custom metrics).
+
+Rolling Update & Rollback: Kubernetes allows rolling updates, which means it will gradually update Pods one by one, ensuring the application remains available throughout the process. If something goes wrong during the update, you can rollback to a previous stable version.
+
+
+
+👨‍💻 When to Choose Which Strategy?
+---------------------------------------
+Use RollingUpdate:
+
+For most production workloads where high availability and zero downtime are required.
+
+When you are gradually releasing new versions of your application and want to avoid service disruption.
+
+Use Recreate:
+
+For non-critical applications or during maintenance windows where it's okay to have a temporary outage.
+
+When you need to clear everything and redeploy fresh Pods (e.g., clearing persistent state or major upgrades).
+
+           
+
+
+=================================================================================================================================================
+ ->   vi deployment-nodeport.yml                   this is name of file for my understanding
+
+
+############################
+deployment-service.yml
+#########################
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webapp
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: demoapp         # Must match pod template labels
+  template:
+    metadata:
+      labels:
+        app: demoapp
+    spec:
+      containers:
+        - name: webappcontainer
+          image: sanjeev51197/test:demotest-v1
+          ports:
+            - containerPort: 9090
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: webappservice
+spec:
+  type: NodePort
+  selector:
+    app: demoapp           # Must match pod labels
+  ports:
+    - port: 80
+      targetPort: 9090
+      nodePort: 30095
+
+
+->kubectl apply -f deployment-nodeport.yml 
+->kubectl get pods         //to check pods that is running
+
+webapp-ff677d85b-47vjl   1/1     Running   0          68s
+webapp-ff677d85b-h4j5d   1/1     Running   0          68s
+webapp-ff677d85b-w4c2n   1/1     Running   0          68s
+
+
+->kubectl get svc        //to check the service
+
+NAME            TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)        AGE
+kubernetes      ClusterIP   10.96.0.1     <none>        443/TCP        5m6s
+webappservice   NodePort    10.98.119.9   <none>        80:30095/TCP   74s
+
+
+->  kubectl delete pod webapp-ff677d85b-47vjl      //to delete first pod to check auto-healing is working or not
+
+-> kubectl delete svc webappservice         // to delete the service  ...  deletion of service doesnot mean pods will be deleted . the service only get deleted so that we can;t access the app externally . public has lost .if service deleted.
+
+
+->kubectl delete deployment webapp        // it will delete the deployment and all the pods it manages
+
+
+->kubectl scale deployment webapp --replicas=5   //increase 
+========================================================================================================================================
+
+Explaination of Line ->
+=====================
+
+🔧 1. Deployment
+
+apiVersion: apps/v1
+Uses the apps/v1 API to define a Deployment.
+
+
+kind: Deployment
+Declares that this is a Deployment (used to manage pods).   it can be RC or RS. which manages Pods
+
+
+metadata:
+  name: webapp                                 //it is the name of your app
+Assigns the Deployment a name: webapp.
+
+
+spec:
+  replicas: 3
+                               Tells Kubernetes to run 3 replicas (3 pods) of your app.
+  selector:
+    matchLabels:
+      app: dempapp
+                                The deployment will manage pods that have the label app: dempapp.
+
+  template:
+    metadata:
+      labels:
+        app: dempapp
+                                 This is the pod template. Every pod created will be labeled app: dempapp.
+
+This must match the selector above.
+
+    spec:
+      containers:
+        - name: webappcontainer               //name of container
+          image: psait/pankajsiracademy:latest             //ikmage name in dockerhub      
+          ports:
+            - containerPort: 9090
+
+                                       This is the container spec inside the pod:
+
+name: webappcontainer
+
+image: Docker image hosted at Docker Hub (psait/pankajsiracademy:latest)
+
+containerPort: The app runs on port 9090 inside the container.
+
+🌐 2. Service
+
+apiVersion: v1
+Uses the core v1 API to define a Service.
+
+
+kind: Service
+Declares a Service (used to expose pods).
+
+
+metadata:
+  name: webappservice
+The service name is webappservice.
+
+
+spec:
+  type: NodePort
+NodePort type: Exposes your app externally by opening a port on every node in the cluster.
+
+Clients can access it via:
+http://<NodeIP>:30095
+
+
+  selector:
+    app: dempapp
+The service targets pods with label app: dempapp — which matches the Deployment.
+
+
+  ports:
+    - port: 80
+      targetPort: 9090
+      nodePort: 30095
+port: 80: The port the service receives traffic on (internally).
+
+targetPort: 9090: Forwards traffic to container's port 9090.
+
+nodePort: 30095: Opens this port on the Kubernetes node — used to access the service from outside the cluster.
+
+
+
+================================================================================================================================================
+
+################################
+Deployment with load balancer
+###############################
+
+LoadBalancer service exposes your application to the internet using a cloud provider’s load balancer (AWS, GCP, Azure).
+
+✔ Automatically gets a public IP
+✔ Routes external traffic → Service → Pods
+✔ Helps in production deployments
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webapp                
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: demoapp         # Must match pod template labels
+  template:
+    metadata:
+      labels:
+        app: demoapp
+    spec:
+      containers:
+        - name: webappcontainer
+          image: sanjeev51197/test:demotest-v1
+          ports:
+            - containerPort: 9090
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: webappservice
+spec:
+  type: LoadBalancer     # ✅ Changed from NodePort to LoadBalancer
+  selector:
+    app: demoapp
+  ports:
+    - port: 80
+      targetPort: 9090
+
+
+         
+->kubectl apply -f deployment-loadbalancer.yml
+
+->curl http://192.168.49.2:30099
+          
+ubuntu@ip-172-31-14-113:~$ curl http://192.168.49.2:30099
+Hello Sanjeev thanks for using kubernates minikubeubuntu@ip-172-31-14-113:~$
+
+
+==================================================================================================================================================
+#what is Cluster
+its Combination of Control plane and worker nodes ,all the things put together are called as Cluster.
+
+#What is Worker Node?
+ans -Its consists of Pods ,Kubelet ,Kube proxy ,Docker ,Inside Pod container ..
+
+The worker node that you created they are treated as one server.
+
+################################################
+
+#Elastic Kubernetes Service (Amazon EKS)
+
+
+###################################################
+
+
+In order to do the setup -
+Step - 1 : Create EKS Management Host in AWS
+
+First I'll create a ubuntu VM EC2 instance .With this VM we'll do the EKS setup
+
+1.Launch new Ubuntu VM using AWS Ec2 ( t2.micro ) 4gm ram 50gb storage . 
+now open gitbash and connect ...
+
+2.now install kubectl in this VM                 //it is used for giving instructions to your control plane.
+
+
+curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.19.6/2021-01-05/bin/linux/amd64/kubectl
+chmod +x ./kubectl
+sudo mv ./kubectl /usr/local/bin
+kubectl version --short --client
+
+
+3.InstaLL Amazon CLI in this VM          //It is used to create insfracture using command line interface. like we have created s3 ,ec2 using CLI
+
+sudo apt install unzip
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+sudo ./aws/install
+aws --version
+
+
+4.Install eksctl using below commands     
+
+curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+sudo mv /tmp/eksctl /usr/local/bin
+eksctl version
+
+
+------------------------------------------------------------------------------------------------------------------------------------------
+
+Now after installing Kubectl , Amazon CLI ,eksctl   in this VM
+we are going to create our cluster .
+
+
+now we need to associate this VM to IAM role. in order to perform IAM service.
+Role defines ->what one resource can perform on another resource   
+So we are goin to create a role and attached to it.
+
+Step - 2 : Create IAM role & attach to EKS Management Host
+
+->go to IAM -> create Role -> Select Aws Service -> Use case EC2 ->next -> add Administrstion Access to get full access -> next -> give role name
+  -> eks_role_2 -> click on create role
+
+once the role is created we have to attached to the ubuntu Linux VM that you created. to interact our VM to other resources . 
+
+->go instance dashboard -> select instance -> action -> security -> modify iam role ->select the eks_role_2 -> click on update
+
+
+----------------------------------------------------------------------------------------------------------------------------------------
+Step - 3 : Create EKS Cluster using eksctl
+
+Syntax:
+
+eksctl create cluster --name cluster-name
+--region region-name
+--node-type instance-type
+--nodes-min 2
+--nodes-max 2 \ --zones 
+
+in my case  
+
+my c7i-flex.large instance type is this and ap-south-1 region
+
+so ,
+
+Your final command should look like this:
+
+eksctl create cluster --name my-eks-cluster \
+--region ap-south-1 \
+--node-type c7i-flex.large \
+--nodes-min 2 \
+--nodes-max 2 \
+--zones ap-south-1a,ap-south-1b
+
+
+✔ Works exactly the same
+✔ Git Bash supports \ for line continuation
+
+⭐ What is AWS CloudFormation?
+------------------------------------
+AWS CloudFormation is a service that lets you create and manage AWS resources using code.
+
+Instead of clicking manually in the AWS Console, you write a template (YAML/JSON) that describes your infrastructure.
+
+Then CloudFormation creates everything automatically. but it is not popular instead of that we use terraform .
+becoz terraform internally uses cloudformation .
+
+🌍 What is Terraform?
+------------------------
+Terraform is an open-source Infrastructure as Code (IaC) tool used to create, change, and manage infrastructure on any cloud provider.
+
+It was created by HashiCorp.
+
+
+======================================================================================================================================
+
+Now go to instance you'll see that two ec2 instance have been created .
+no in gitbash
+
+#CHeck the Worker Nodes
+
+->kubectl get nodes
+
+NAME                                            STATUS   ROLES    AGE     VERSION
+ip-192-168-54-202.ap-south-1.compute.internal   Ready    <none>   3m37s   v1.32.9-eks-ecaa3a6
+ip-192-168-9-74.ap-south-1.compute.internal     Ready    <none>   3m36s   v1.32.9-eks-ecaa3a6
+
+when i shutdown the one instance that is my-eks-cluster5 . after some time new instance will be created that is called as self healing .
+
+After cluster created we can check nodes using below command.
+->kubectl get nodes  
+
+Note: We should be able to see EKS cluster nodes here.**
+We are done with our Setup
+
+Step - 4 : After your practise, delete Cluster and other resources we have used in AWS Cloud to avoid billing
+->eksctl delete cluster --name my-eks-cluster --region ap-south-1
+
+
+========================================================================================================================================
+ 
+->  vi deployment-lb.yml
+
+yml file to deploy application in eks with loadbalancer
+#############################################################
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: webapp                      #this is the name of deployment
+spec:
+ replicas: 2           #no. of pods that will create
+ strategy: 
+  type: RollingUpdate         #suppose there is 2 pods it will first update first one then second one.it willnot update all together.
+ selector:
+  matchLabels:
+   app: javawebapp      #this 
+ template:
+  metadata:
+   name: javawebpod
+   labels:
+    app: javawebapp     #it used to mention that these are the pods which is managed by deployment. matchlabel of deployment & applabel shouldsame
+  spec:
+   containers:
+   - name: webappcontainer                         #it is the docker container
+     image: sanjeev51197/test:demotest-v1
+     ports:
+     - containerPort: 9090    #application is running on 9090 port no
+---
+apiVersion: v1
+kind: Service
+metadata:
+ name: websvc
+spec:
+ type: LoadBalancer
+ selector:
+  app: javawebapp
+ ports:
+  - port: 80
+    targetPort: 9090
+...
+
+
+->kubectl apply -f deployment-lb.yml
+
+🎯 Get the LoadBalancer External IP-
+->kubectl get svc
+
+#enable port 80 in Security group
+->kubectl get svc
+
+8b6628d7cd-1708057803.ap-south-1.elb.amazonaws.com    #this the url
+
+output ->Hello Sanjeev thanks for using kubernates
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------------
+#Explaination
+1️⃣ Deployment
+replicas: 2
+
+Creates 2 pods.
+
+selector: matchLabels              //Used to select which pods belong to this deployment.
+
+2️⃣ LoadBalancer Service
+
+This exposes your app to the internet.
+
+type: LoadBalancer
+
+EKS (AWS) will automatically create:
+
+✔️ An external LoadBalancer
+✔️ Public IP
+✔️ Route to pod
+
+Notes
+-------
+COntrol plane creates the Worker node. 
+worker nodes are individual servers . the no of nodes the no of vm server will be there. 
+i'll have to split that server to thst load balancer.. i can not put that load on one server. load balancer is automatically impleneted by kubernates.. 
+like round robbin fashion it will give to the server .load balancer uses this fashion. first request to first server ,second request to second server ,third to third server . if there is 3server are there.
+
+if i dont use the load balancer the ip address of all the worker nodes are different . All the worker nodes are actually registered with the Load balancer. 
+The incoming traffic come to load balancer and the loadbalancer  balances the load on  worker node . once the load goes to worker node there aree pods inside the node. 
+we use kubeproxy ...  now when the incoming traffic comes to the node it then balances the load on the Pods.
+
+
+
+===============================================================================================================================
+###FULL DEPLOYMENT ROJEC USING CI CD PIPELINE ,DOCKER ,KUERNATES
+
+1.first created an instance with eks_host name  t3.micro , devops key-pair , security-1 launched . then connectod from gitbash
+
+setup the eks - install kubectl , aws cli ,eksctl 
+
+2.create an iam role add administrator full access and Ataach to ec2 instance in action modify iam role .and add role.
+this machine will interact with Jenkins
+Add below permissions for the role
+
+IAM - fullaccess
+VPC - fullaccess
+EC2 - fullaccess
+CloudFomration - fullaccess       //because worker node  was created .it was internally uses cloudFormation
+Administrator - acces
+
+Enter Role Name (eksrole)    -kubernates_role
+
+Attach created role to EKS Management Host (Select EC2 => Click on Security => Modify IAM Role => attach IAM role we have created)..
+
+-------------------------------------------------------------------------------------------------------------------------------------------
+3.Create an Eks Cluster using eksctl 
+
+eksctl Command (Region = ap-south-1)
+----------------------------------------
+
+->  eksctl create cluster --name sanjeev-cluster \
+  --region ap-south-1 \
+  --node-type t3.micro \
+  --nodes-min 2 \
+  --nodes-max 2 \
+  --zones ap-south-1a,ap-south-1b
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------
+
+4. Create Jenkins Server Setup in Linux Vm  
+ again go to instance create an instance with name Jenkins_ubuntu  ,select minimum 4gb ram  ,select docker key pair , security-1 
+and enable port 8080 becoz Jenkins run on 8080 by default.
+   
+now Install java in jENKINS UBUNTU .. OPEN for that open gitbash in another window and connect Jenkins ubuntu 
+-------------------------java----------------------------
+sudo apt update
+sudo apt install fontconfig openjdk-17-jre
+java -version
+
+rember the server in my case  85 is eks_host             and 90 is Jenkins
+
+
+now Install Jenkins in Jenkins Ubuntu
+-------------------------------------
+sudo wget -O /usr/share/keyrings/jenkins-keyring.asc \
+  https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
+echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] \
+  https://pkg.jenkins.io/debian-stable binary/ | sudo tee \
+  /etc/apt/sources.list.d/jenkins.list > /dev/null
+sudo apt-get update
+sudo apt-get install Jenkins
+
+
+
+Now Start Jenkins
+----------------------
+sudo systemctl start jenkins
+sudo systemctl enable jenkins
+sudo systemctl status jenkins
+
+Open jenkins server in browser using VM public ip
+->  http://3.108.55.192:8080/             //ip is your ec2 public ip
+
+
+Copy jenkins admin pwd
+->sudo cat /var/lib/jenkins/secrets/initialAdminPassword
+
+Create Admin Account & Install Required Plugins in Jenkins
+now : Configure Maven as Global Tool in Jenkins
+Manage Jenkins -> Tools -> Maven Installation -> Add maven
+
+*******
+#Attach that role which you have created earlier .. attach to it.
+
+
+Setup Docker in Jenkins
+------------------------------
+
+curl -fsSL get.docker.com | /bin/bash
+sudo usermod -aG docker jenkins
+sudo systemctl restart jenkins
+sudo docker version
+
+#check installation
+-> docker -v
+
+Install AMAZON CLI in Jenkins Ubuntu
+-------------------------------------
+sudo apt install unzip 
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+sudo ./aws/install
+aws --version
+
+
+To interact with Kubernates server .Jenkins should have all the setup of kubernates installed in the Jenkins .
+why Kubectl is required in Jenkins ?
+->because kubectl will fire the command to  control plane  but that control plane is present in EKS host server. 
+
+Install Kubectl in JENKINS Server
+-------------------------------------
+
+curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.19.6/2021-01-05/bin/linux/amd64/kubectl
+chmod +x ./kubectl
+sudo mv ./kubectl /usr/local/bin
+kubectl version --short --client
+
+
+
+###########
+Update EKS Cluster Config File in Jenkins Server
+#############
+
+
+->Now the workernode cluster thst is created in EKS_Host i want to give the same config file details to Jenkins Server.because goin forward Jenkins will communicate with the cluster .
+
+Execute below command in Eks Management host & copy kube config file data
+-> cat .kube/config
+-------------------------------------------------------------------------------------------------------------------------------------------------
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURCVENDQWUyZ0F3SUJBZ0lJYXp0dklkZHhIcmd3RFFZSktvWklodmNOQVFFTEJRQXdGVEVUTUJFR0ExVUUKQXhNS2EzVmlaWEp1WlhSbGN6QWVGdzB5TlRFeE1qY3dOakUwTkRkYUZ3MHpOVEV4TWpVd05qRTVORGRhTUJVeApFekFSQmdOVkJBTVRDbXQxWW1WeWJtVjBaWE13Z2dFaU1BMEdDU3FHU0liM0RRRUJBUVVBQTRJQkR3QXdnZ0VLCkFvSUJBUURhMm1RaHZCUVBrTlNsUm82ZXNkSXg1Um00TU9GbTRFL2EydlZUaVhLTVNCUFpFNnhFM3MybUhueisKeVFyZGRpN2tIaDY2aTRvVGVrQmx6eE1zQ3BSRHZ0UGJHZHhEZ2MzK0dhSU1ySjFYMTc2WWtibnlJWTdoclZOMApqeU1xTjlhVTIyWmNMeGJ2NFVFRytWalVkR1dQa0NMM2daeTF3VmJtME5MSEZWOE9TVHJUTUl1Z0t0MWcyQTFZCldXeUc0NXhaNHUrL2w2Y2V3TDdoQ2c1RUZSbmgvNXRsRUlBMWFkbGFDLzFZTldBNXplQXh3aE1QYWxUNEh0TTEKM1FqYzFXWEp0bXhET08rdFdwUGlJVzlUajBueTFKNUN2a04wcUxUejFtNTl5TXRXUTNnb2ZielVLV3Q1WHF2dwpqU1I4Q3hQYWxLa2FDeHczVHJzVzNKdlNhWUhyQWdNQkFBR2pXVEJYTUE0R0ExVWREd0VCL3dRRUF3SUNwREFQCkJnTlZIUk1CQWY4RUJUQURBUUgvTUIwR0ExVWREZ1FXQkJSS0hjcjQ5clhnZ1cyUE81SFBEajY1bWtFcGtqQVYKQmdOVkhSRUVEakFNZ2dwcmRXSmxjbTVsZEdWek1BMEdDU3FHU0liM0RRRUJDd1VBQTRJQkFRQy80aW1wczlVdQptOWsrRHlyYjNpb0x5ZTZrM0J5dVFDL2pXREhqN292MmhMekRkWEdSeGxYak5qMHRIQVppNHowRFRjZ05pVjFtCm5yenRPbkZZRHBJSVY5ZzNjOURaSytrQjgwcS83TlEwTFc0cUdxcnRuRDJKU3ZXS3QxVnBwYXZFR1h1aE9FM3UKTk9COFFGU1FZOUlwRVdCR0o2UGZyNnBzbWZmMzVIamhDN1MxeXpZMUFONWJHR0NScmg4U2pab284bTlvTW1vcgpXb1FkMUhNc0d6UFhid21MV1FFbkFMNS9EYkN3NE00OTJTbVVCNzdSei9uMlJSUDIwL3RGbUp4aDV4QUd6eVFnCmg1S21ZNWN6RzJUNkxnd29oRVJxcGxkUW9QVGFEbjYyTVowTXRVanM3UG9nNy94N0UxS2NQb21CeExTdWR1aWgKM0hPMkhieDRlK2VECi0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K
+    server: https://FECD8CF8160C2877B4C9A2EC53160097.gr7.ap-south-1.eks.amazonaws.com
+  name: sanjeev-cluster.ap-south-1.eksctl.io
+contexts:
+- context:
+    cluster: sanjeev-cluster.ap-south-1.eksctl.io
+    user: i-0253b130989ce149c@sanjeev-cluster.ap-south-1.eksctl.io
+  name: i-0253b130989ce149c@sanjeev-cluster.ap-south-1.eksctl.io
+current-context: i-0253b130989ce149c@sanjeev-cluster.ap-south-1.eksctl.io
+kind: Config
+users:
+- name: i-0253b130989ce149c@sanjeev-cluster.ap-south-1.eksctl.io
+  user:
+    exec:
+      apiVersion: client.authentication.k8s.io/v1beta1
+      args:
+      - eks
+      - get-token
+      - --output
+      - json
+      - --cluster-name
+      - sanjeev-cluster
+      - --region
+      - ap-south-1
+      command: aws
+      env:
+      - name: AWS_STS_REGIONAL_ENDPOINTS
+        value: regional
+      provideClusterInfo: false
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------------
+
+Execute below commands in Jenkins Server and paste kube config file
+$ cd /var/lib/jenkins
+$ sudo mkdir .kube
+$ sudo vi .kube/config           then paste that above file and save .
+
+----------------------------------------------------------------------------------------------------------------------------------------------
+Execute below commands in Jenkins Server and paste kube config file for ubuntu user to check EKS Cluster info
+$ cd ~                      //goin back to working directory 
+
+if does not show .kube file then 
+Just copy Jenkins kubeconfig to ubuntu:
+run this
+
+sudo mkdir -p /home/ubuntu/.kube
+sudo cp /var/lib/jenkins/.kube/config /home/ubuntu/.kube/config
+sudo chown -R ubuntu:ubuntu /home/ubuntu/.kube
+
+
+$ ls -la
+$ sudo vi .kube/config           //insert -> paste the above configuration and save it.
+
+check eks nodes
+$ kubectl get nodes
+
+ubuntu@ip-172-31-6-90:~$ kubectl get nodes
+NAME                                           STATUS   ROLES    AGE   VERSION
+ip-192-168-5-128.ap-south-1.compute.internal   Ready    <none>   98m   v1.32.9-eks-ecaa3a6
+ip-192-168-60-47.ap-south-1.compute.internal   Ready    <none>   98m   v1.32.9-eks-ecaa3a6
+
+
+Note: We should be able to see EKS cluster nodes here.
+
+-----------------------------------------------------------------------------------------------------------------------------
+Now We'll Create CI/CD pipeline ->
+--------------------------------
+First we'll have to create a Yml file inside the project . go to project right click on Src ->create a file  kubernates-deploy.yml
+and paste and save and push to GitHub.
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: webapp
+spec:
+ replicas: 2
+ strategy: 
+  type: RollingUpdate
+ selector:
+  matchLabels:
+   app: javawebapp
+ template:
+  metadata:
+   name: javawebpod
+   labels:
+    app: javawebapp
+  spec:
+   containers:
+   - name: webappcontainer
+     image: sanjeev51197/test:demotest-v1
+     ports:
+     - containerPort: 9090
+---
+apiVersion: v1
+kind: Service
+metadata:
+ name: websvc
+spec:
+ type: LoadBalancer
+ selector:
+  app: javawebapp
+ ports:
+  - port: 9090                  //this is the port where app is running.
+    targetPort: 9090
+...
+
+------------------------------------------------------------------------------------------------------------------------------
+
+Now come to Jenkins brower -> create a job that is test-pipeline save apply
+
+go to configure and paste
+pipeline {
+    agent any
+
+    tools {
+        maven "maven-3.9.11"
+    }
+
+    stages {
+
+        stage('Clone Repo') {
+            steps {
+                git(
+                    url: 'https://github.com/sanjeev51197/demoapp.git',
+                    branch: 'main'
+                )
+            }
+        }
+
+        stage('Maven Build') {
+            steps {
+                sh 'mvn clean package'
+            }
+        }
+
+        stage('Docker Image') {
+            steps {
+                sh 'docker build -t sanjeev51197/test:demotest-v1 .'
+            }
+        }
+
+        stage('k8s deployment') {
+            steps {
+                sh 'kubectl apply -f kubernates-deploy.yml'
+            }
+        }
+
+    } // stages ends
+} // pipeline ends
