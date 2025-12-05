@@ -407,7 +407,14 @@ What is @Qualifier in Spring?
 What is Postman?
 ################
 Postman is a popular API testing tool used to send requests and receive responses from REST APIs.
-It helps developers test APIs without writing any front-end code.  
+It helps developers test APIs without writing any front-end code. 
+To access swagger use swagger dependencies and hit http://localhost:8080/swagger-ui.html
+
+
+What is Swagger?
+################
+Swagger is a tool used to document, test, and interact with REST APIs.
+In Spring Boot, Swagger helps developers and testers view all APIs in a clean UI and test them without Postman. 
 
 
 What is Idempotent?

@@ -1,0 +1,314 @@
+🌐 What are Microservices?
+################################
+Microservices is an architecture style where an application is broken down into small, independent services that communicate over a network (usually HTTP). Each service focuses on a single business function, is independently deployable, and can be developed, scaled, and maintained separately.
+
+
+🚀 Why we Use Spring Boot for Microservices?
+###########################################
+Spring Boot provides all the necessary tools and integrations (e.g., REST APIs, Eureka, Config Server, etc.) to build robust, production-ready microservices quickly.
+
+✅ Benefits of Microservices with Spring Boot:
+##############################################
+1. Loose coupling between services
+2. Independent deployment and scaling
+3. Technology flexibility (each microservice can use different tech)
+4. Easier debugging, testing, and maintenance
+5. Faster time-to-market
+
+
+
+🔧 What is a Service Registry in Microservices?(Service-Discovery)
+#####################################################
+A Service Registry is a central directory where all microservices register themselves so they can be discovered and communicate with each other without hardcoding IPs or URLs.
+
+In Spring Boot, the most common Service Registry is Eureka Server (from Netflix OSS).
+
+Note: 
+-> Eureka server runs by default on port 8761.
+-> If you run eureka server on port 8761. Client (micro services will automatically register with eureka server)
+
+What is Eureka Server?
+#######################
+Eureka Server is a service registry in Spring Cloud used for service discovery. .It maintains a list of all microservices and their network locations (IP + port). In main application we annotate @EnableEurekaServer .
+When a service starts, it registers itself with the Eureka Server. Other services can look up services from Eureka to communicate with them.
+What is Eureka Client?
+#######################
+Eureka Client is a microservice that registers itself with Eureka Server and can also discover other services. Each microservice (like User Service, Order Service) acts as a Eureka Client.   we use  @EnableEurekaClient in main application to register with eureka discovery.
+
+On startup, it sends a heartbeat to the Eureka Server to stay registered.
+It can query Eureka to find the address of other services.
+Heartbeat : Eureka Clients periodically send heartbeat to server to maintain registration.
+
+
+What are the Steps to Create Eureka Server / Service Registry
+##############################################################
+1.Create a Spring Boot Project 
+2.Add Eureka Discovery Server dependency 
+3.In your main class, add @EnableEurekaServer annotation which makes this app a Service Registry.
+4.Configure application.properties  
+server.port=8761                                       //Port of Eureka Server (default: 8761)
+eureka.client.register-with-eureka=false               // false because server itself is not a client
+eureka.client.fetch-registry=false                     //false because server does not need to fetch services
+spring.application.name=eureka-server                  //Name of Eureka Server
+
+🛠️ What is Spring Boot Admin Server?
+#############################################
+
+"Spring Boot Admin Server is a management and monitoring tool for Spring Boot applications.
+It provides a dashboard to monitor health, metrics, logs, and status of microservices in real-time, helping developers and DevOps teams manage distributed applications efficiently."
+
+
+How Admin Server Works
+######################
+1.Create a SpringBoot Project   2.Add Admin Server dependency and Web Dependency    3. In main class annotate @EnableAdminServer 
+4.configure app.properties  =  server.port=8080   ,  app.name=admin-server  , spring.boot.admin.ui.title=Spring Boot Admin Server
+5.In your microservices add AdminClient dependency 
+6.configure application.properties in client microservice
+spring.boot.admin.client.url=http://localhost:8080
+management.endpoints.web.exposure.include=*
+management.endpoint.health.show-details=always 
+
+
+Why do we need Spring Boot Admin Server when we already have Actuator?
+##########################################################################
+
+"Actuator exposes health and metrics endpoints for a single application, but it doesn’t provide a centralized dashboard. 
+ In a microservice architecture with many services, checking each service’s actuator endpoints manually becomes difficult.
+Spring Boot Admin Server solves this by providing a UI dashboard that aggregates data from all microservices in one place. It visualizes health, logs, metrics, memory usage, thread dumps, and more. So, Actuator exposes the data; Admin Server displays and manages it centrally.
+
+
+Difference Between Eureka Server and Spring Boot Admin Server
+################################################################
+Eureka Server is a Service Registry .It stores all microservices' locations (IP + port).
+It enables Service Discovery.
+Microservices register themselves to Eureka, and other services can find them.
+
+👉 Eureka = Phone Directory of Microservices
+
+Admin Server is a Monitoring Dashboard .It monitors microservices using Actuator endpoints which Shows health, logs, metrics, status, etc.
+It Provides a web UI to monitor all services.
+
+👉 Admin Server = CCTV Monitoring System for Microservices
+
+
+📡 What is Zipkin Server?
+###############################
+Zipkin Server is a distributed tracing system that helps you trace and visualize the flow of requests across multiple microservices. It shows you how long each service call takes and helps diagnose latency issues or failures in a microservices architecture.
+
+✅ Key Features of Zipkin:
+----------------------------
+-> Tracks request paths across microservices (traceId)
+-> Shows latency and response time of each service
+-> Helps identify bottlenecks or failures
+-> Integrates with Spring Cloud Sleuth for automatic tracing
+
+Step to Install Zipikin Server:
+
+1. Download Zipkin Servers: https://zipkin.io/pages/quickstart
+2. To run jar file : java -jar file-name
+3. Access that on port 9411                
+
+Note: the zikin server and spring cloud sleuth dependeny should be added in client  microservices to check or track in zipkin server 9411
+
+
+What is Spring Cloud Sleuth? 
+#############################
+Spring Cloud Sleuth is a distributed tracing library for Spring Boot microservices.
+It generates and attaches Trace IDs and Span IDs to every request that flows through your services.
+
+This makes it possible to track a request across multiple microservices.
+
+👉 Sleuth = Generates tracing IDs
+👉 Zipkin = Stores & displays tracing data
+
+
+What should I add while creating my first microservice?
+###########################################################
+"When I create my first microservice, I include Spring Web, Lombok, Spring Data JPA, and the required database driver. I also configure application.properties for port, service name, and DB connection. 
+Later, if I build a complete microservices ecosystem, I additionally include Eureka Client, Actuator, Feign Client, Zipkin/Sleuth, and Config Client based on architecture requirements."
+
+
+Why Can't Browser/Postman Access a Service Using Service Name?
+##############################################################
+Browser/Postman → Needs a real IP/Port (ex: http://localhost:8081)
+They do not communicate with Eureka Server, so they can't resolve service names.
+ex- http://ORDER-SERVICE/orders     this will not work in Postman.
+
+
+So how to access application with Service name then?
+######################################################
+To do so, we have to use client like Feign, Webclient, RestTemplate.
+Second These Clients provide load balancer concept. Our microservices will continue to run even when url changes as microservice are being accessed using microservice names from eureka server.
+
+
+Difference Between Rest Template, Webclient & Feign client
+##############################################################
+Feature                         | RestTemplate (with setup)  | WebClient (with setup)  | Feign Client (automatic)
+------------------------------- | -------------------------- | ----------------------- | --------------------------
+Can use microservice name       | Yes                        | Yes                     | Yes
+Requires manual configuration   | Yes (@LoadBalanced)        | Yes (@LoadBalanced)     | No  
+Built-in load balancing         | Yes                        | Yes                     | Yes
+URL hardcoded by default        | Yes                        | Yes                     | No
+Effort level                    | Medium                     | Medium                  | Low
+
+
+Which one to use when?
+########################
+Use Feign Client if:  You are doing microservices ,You have Eureka/Service Registry
+You want simplest calls with load balancing
+➡ Best for Microservices
+
+Use WebClient if:  You want high performance   ,Large traffic  ➡ Best for reactive or scalable systems
+
+Use RestTemplate if: You maintain old code  ➡ Not recommended for new projects
+
+
+What is Feign Client?
+#####################
+Feign is a declarative REST client that allows microservices to call other microservices using simple Java interfaces.
+
+
+Why we use Feign?
+#####################
+We don't need to write boilerplate HTTP code   .Automatically integrates with Eureka Discovery
+
+It has Built-in load balancing  . It Supports fallback (Resilience4j / Hystrix)
+
+it provide Cleaner and more readable code
+
+it Works well in microservice architecture
+
+
+How Feign Client Works (Internally)
+####################################
+
+Step 1: You define an interface      
+
+ @FeignClient(name = "USER-SERVICE")
+public interface UserClient {
+    @GetMapping("/users")
+    List<User> getAllUsers();
+}
+
+step 2: Feign creates a dynamic proxy class for this interface.
+
+When you call:   userClient.getAllUsers();   Feign asks Eureka:
+
+👉 “Give me the instance details of USER-SERVICE.”
+Eureka responds with:
+
+http://192.168.x.x:8081
+http://192.168.x.x:8082 
+
+step 3: Spring Cloud LoadBalancer picks one instance: using Round Robin pattern
+step 4: Feign builds the HTTP request    -GET http://192.168.x.x:8081/users
+Step 5: Sends the HTTP request and Converts response back to Java object  (Feign uses Jackson to convert JSON → Java object)
+
+
+Where do we call a Feign Client?
+####################################
+You call a Feign client inside your Service layer of a microservice — usually from:
+✔ Service class (most common & recommended)
+
+
+
+What Is Load Balancing?
+###########################
+Load balancing means distributing incoming requests across multiple instances of the same microservice so that no single instance gets overloaded.
+
+
+
+How Load Balancing Works With Eureka (Client-Side Load Balancing)
+#################################################################
+“In microservices with Eureka, load balancing is client-side.
+Services do not hardcode URLs; they call other services using service names.
+Spring Cloud LoadBalancer fetches all healthy instances from Eureka and distributes requests using round-robin or random strategy.
+If one instance goes down, the load balancer automatically reroutes traffic, making the system fault-tolerant and scalable.”
+
+Round-Robin (default) ->    Each request goes to the next instance in order:
+
+
+Why do we need Load Balancing?
+##############################
+✔ Fault Tolerance -If one instance goes down, traffic automatically shifts to other instances.
+
+✔ Scalability -You can run more instances when traffic increases.
+
+✔ Zero downtime -Deploy new versions without stopping old ones (blue-green deployments).
+
+✔ Better Performance -Distributes load so no single server becomes slow.
+
+
+
+
+What is Spring Cloud Config?
+##############################
+
+Spring Cloud Config is a centralized configuration management tool for microservices.
+
+It allows you to keep all application configuration (application.properties / YAML) in one central place
+→ instead of keeping configuration individually inside each microservice.
+
+This helps all microservices load configuration from a central Config Server which reads properties from a Git repository during startup (or even refresh at runtime).
+.
+
+🔧 Why is it needed?
+#####################-> In a microservices architecture:
+-> Each service may have different configuration (ports, DB URLs, API keys).
+-> You may want to change config without redeploying the service.
+-> Managing configs across dozens of services becomes very difficult
+
+
+What is API?
+############
+“API is an interface that allows different software systems to interact with each other by exposing functionalities through predefined endpoints or methods.”
+
+
+what is API GATEWAY?
+#####################
+“API Gateway is a single entry point for all microservices. Instead of the client calling each microservice directly, the client sends the request to the API Gateway.
+The gateway decides which microservice should handle the request and forwards it.
+It also handles common things like security, routing, logging, and load balancing.”
+
+
+Why API GATEWAY is REQUIRED?
+###########################
+1. Clients don’t need to remember multiple URLs to call the microservice
+
+2. Centralized Security (JWT, Authentication, Filters) -Instead of adding authentication in each microservice:
+do it once in API Gateway.👉 Saves time and makes system secure.
+
+3. Load Balancing -Gateway connects with Eureka and distributes traffic:
+Product Service (8081, 8082, 8083) -Gateway picks one instance automatically.  for👉 Better performance + fault tolerance.
+
+4. Hides Microservice Details  -lient does NOT need to know:  the ports of microservices.
+
+
+How to implement API Gateway
+############################
+Step 1 — Create a separate Spring Boot project and give a name api-gateway   (This project will NOT contain business logic.)
+
+Step 2 — Add Gateway dependencies (These allow the gateway to talk to Eureka & forward requests.)
+
+         spring-cloud-starter-gateway
+
+         spring-cloud-starter-netflix-eureka-client
+
+Step 3 — Register Gateway with Eureka (@EnableDiscoveryClient)
+
+Step 4 — Create Routes -You configure routes to map incoming paths to microservice names (in Application.yml file )
+
+now gateway automatically routes request to correct microservice ...
+
+
+How to Secure microservice project?
+###################################
+
+“I secure microservices using a combination of API Gateway + JWT + Spring Security.
+API Gateway checks authentication and validates the JWT token. Only valid requests are routed to services.
+
+Microservices use Spring Security for authorization and role-based access.
+Service-to-service calls also pass JWT for internal protection.
+
+We use HTTPS for secure communication and apply validations to avoid bad input.
+This gives complete end-to-end security in a microservice architecture.”

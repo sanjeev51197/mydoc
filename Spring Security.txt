@@ -1,0 +1,297 @@
+What is Spring Security?
+########################
+Spring Security is a powerful framework used to secure Java/Spring applications.
+It handles authentication (login) and authorization (access control) and protects applications from common security threats like CSRF, XSS, Session Fixation, Clickjacking, etc.
+
+
+CSRF (Cross-Site Request Forgery)
+--------------------------------------
+1. 🛡 CSRF (Cross-Site Request Forgery)
+What it is:
+An attacker tricks a logged-in user into unknowingly sending a request (like transferring money or changing a password) to your application.
+
+Example:
+
+-> You're logged into yourbank.com.
+-> An attacker sends you a malicious link:
+-> <img src="https://yourbank.com/transfer?to=attacker&amount=1000" />
+-> If your session is still active, your browser might execute this without your intent.
+-> Spring Security Protection:
+-> Automatically adds a CSRF token to every form and expects it in requests. 
+-> In a web application that uses Spring Security, the CSRF token is automatically added as a hidden input field inside HTML forms.
+-> Blocks requests without valid tokens.
+
+2. 🔒 Session Fixation
+------------------------------------
+What it is:
+An attacker sets a known session ID for a user, then waits for the user to log in. If successful, the attacker reuses the same session.
+
+Example:
+-> Attacker sends a link with a fixed session ID:
+-> https://example.com/login;jsessionid=abc123
+-> User logs in; attacker now hijacks the session with abc123.
+-> Spring Security Protection:
+-> Regenerates the session ID after successful login by default (prevents reuse).
+
+To Enable we do this: http.sessionManagement().sessionFixation().migrateSession();  // default behavior
+
+
+3. Clickjacking
+
+-> Here's a simplified explanation of the Clickjacking attack:
+-> Attacker's Page: The attacker creates a webpage that hides a legitimate banking website inside an invisible iframe (like a hidden box).
+-> User's Interaction: The user thinks they are clicking on a button (e.g., "Play Video" or "Download File") on the attacker’s page.
+-> What Happens: In reality, the user is actually clicking on the invisible iframe that contains the banking page. They might unintentionally trigger actions on the banking site, like transferring money or changing their account settings.
+
+4. Brute-Force Attack Example
+-> What It Is: A Brute-Force Attack is when an attacker attempts to guess the correct credentials (like a password) by trying many possible combinations until they find the correct one.
+
+Example:
+-> The Attacker's Goal: The attacker wants to gain unauthorized access to a user's account, for example, the user’s bank account.
+
+
+How Spring Security works internally?
+#####################################
+1.Client sends a request
+
+2.The request goes through Security Filter Chain
+
+3.Authentication filter checks credentials(e.g., UsernamePasswordAuthenticationFilter)
+
+4.Authentication Manager delegates to Authentication Providers
+
+5.DaoAuthenticationProvider validates user via UserDetailsService
+
+6.If valid → authentication success  → Authentication object is created and stored in SecurityContextHolder.
+
+7.If invalid → access denied
+
+8.For authorization, Access Decision Manager checks user roles before accessing endpoints
+
+
+
+What is SecurityFilterChain?
+#############################
+SecurityFilterChain is the core of Spring Security.
+It is a chain of multiple security filters that intercept every incoming request and apply authentication, authorization, and security rules before the request reaches the controller.
+
+It decides:
+
+✔ Which URLs are protected
+✔ Which URLs are public
+✔ How authentication should happen
+✔ How authorization should be checked
+✔ What security features are enabled (CORS, CSRF, sessions, etc.)
+
+
+
+What is UserDetailsService and UserDetails?
+###########################################
+UserDetailsService is a core Spring Security interface used to load user information from your database or any user store during authentication.
+
+📌 Purpose
+When a user tries to log in, Spring Security will call:  UserDetails loadUserByUsername(String username)
+This method must return a UserDetails object containing:  username ,password ,roles/authorities  ,account status (locked/expired etc.)
+
+
+UserDetails is an interface representing the logged-in user’s full security information.
+
+It contains methods like:   String getUsername();      String getPassword();        Collection<? extends GrantedAuthority> getAuthorities();
+
+How they work together 
+1️⃣ User hits login API  -Spring Security triggers authentication.
+
+2️⃣ DaoAuthenticationProvider calls ➡ UserDetailsService.loadUserByUsername()
+
+3️⃣ This returns a UserDetails object -Containing username + password + authorities.
+
+4️⃣ Spring Security compares passwords  -Using PasswordEncoder.
+
+5️⃣ If valid → user authenticated.
+
+
+
+What is PassWordEncoder?
+##########################
+PasswordEncoder is a Spring Security interface used to hash, encrypt, and verify passwords.
+
+
+
+Why do we need PasswordEncoder?
+################################
+Because storing plain-text passwords is dangerous.
+Instead, we hash the password when saving to database, and compare hashes during login
+
+
+What is BCryptPasswordEncoder?
+###############################
+BCryptPasswordEncoder is a Spring Security implementation of the PasswordEncoder interface that encrypts passwords using the BCrypt hashing algorithm.
+
+It provides strong, salted, one-way hashing(Password cannot be decrypted back), which makes it the most recommended and default choice for securing passwords in Java/Spring applications.
+
+
+How it Works (Simple Flow)
+############################
+1.User enters raw password → "abc123"
+
+2.BCrypt hashes it internally (with salt)
+
+3.Saves hashed password in DB   .Example:  $2a$10$8FZ...jdj223....
+
+4.On login, Spring compares raw vs hashed using:    ex matches(rawPassword, encodedPassword)
+
+
+
+Difference between Authentication and Authorization?
+#####################################################
+
+1️⃣ Authentication — “Who are you?”    -  Authentication is the process of verifying the identity of a user.
+
+✔ Confirms username + password
+✔ Happens before authorization
+
+Think: Authentication = Identity Verification
+
+2️⃣ Authorization — “What are you allowed to do?”   - Authorization determines what resources or actions an authenticated user is allowed to access.
+
+✔ Checks roles & permissions
+✔ Happens after authentication
+
+Think: Authorization = Access Control
+
+
+
+What is AuthenticationManager?
+#############################
+
+AuthenticationManager is the core component in Spring Security responsible for handling authentication.
+It receives the login credentials and delegates the validation to configured AuthenticationProviders such as DaoAuthenticationProvider.
+If the provider validates successfully, it returns an authenticated object; otherwise, authentication fails
+
+
+What is JWT?
+#############
+JWT (JSON Web Token) is a compact, secure, digitally signed token used for authentication and authorization in web applications.
+It allows the server to verify the identity of a user without storing session data on the server.
+
+
+What is a JWT Token?
+#####################
+A JWT token is a string token generated after successful login, containing user information + expiry time, signed with a secret key.
+
+It has three parts:    XXXXX.YYYYY.ZZZZZZ
+
+Header – algorithm + token type
+
+Payload – user data (username, roles, expiry time)
+
+Signature – verifies the token is genuine
+
+
+How JWT authentication works?
+################################
+1️⃣ User Logs In   -User enters username & password.
+
+2️⃣ Server Authenticates User (via AuthenticationManager + Provider)    If valid → server generates a JWT token.
+
+3️⃣ Server Returns JWT Token to Client  The client stores it in:  Browser local Storage or Mobile app storage
+
+4️⃣ Client Sends JWT on Every Request  -JWT is sent in the Authorization header:  Authorization: Bearer <token>
+
+5️⃣ Server Validates the Token  Server checks: Signature Expiry User details
+
+6️⃣ If Token Is Valid → Request Allowed  -Server never checks the database again for authentication.
+
+7️⃣ If Token Invalid or Expired → Request Rejected
+
+
+Why Do We Use JWT?
+####################
+✔ Stateless Authentication  - Server doesn’t store user sessions → scalable.
+✔ No Need to Hit the Database Every Time  -After login, JWT itself contains user information.
+✔ Fast & Lightweight -Just a simple signed string.
+✔ Secure (if implemented properly)  - Cannot be modified because of signature.
+✔ Used in Microservices - Each microservice can validate the token independently.
+
+
+What does Stateless mean?
+##########################
+A stateless application does not store any user session or authentication data on the server.
+This means:  The server does not remember the user between requests  .Every request must carry authentication information (like JWT token)
+
+
+
+How to secure REST APIs?   
+########################
+To secure REST APIs, we implement multiple layers of security.
+1. Authentication (Who are you?)
+✔ JWT (JSON Web Token) -Most popular method. After login, user gets a token and must send it with every request.
+
+✔ OAuth2 -Used for enterprise & social login (Google, Facebook).
+
+✔ Basic Authentication (Not recommended for production) -Username/password in every request.
+
+2. Authorization (What can you access?)  -Use Role-Based Access Control (RBAC):
+   ADMIN → can manage user    and    USER → can access own data
+
+3. HTTPS (TLS/SSL)  -A REST API must use HTTPS to encrypt data and prevent:
+
+4. CSRF Protection  -For stateful apps (like forms), CSRF must be enabled or token-based. For stateless REST APIs → CSRF is disabled.
+
+In Spring Boot, JWT is the most common approach because it provides stateless and scalable security for microservices.
+
+
+What does filterChain.doFilter(request, response) do?
+#####################################################
+
+filterChain.doFilter(request, response) tells Spring Security to continue the filter chain.
+Once your custom filter finishes its logic (like JWT validation), this method forwards the request to the next filter.
+If you don’t call it, the request will stop and never reach your controller.
+
+
+What is OncePerRequestFilter?
+##############################y
+
+OncePerRequestFilter is a Spring Security base filter that executes exactly once per client request.
+We extend it to create custom filters like JWT filters, so our logic (such as token validation) runs only once and does not get repeated during internal dispatches.
+Spring Security guarantees the filter will not be triggered multiple times.
+
+
+What is a Bearer Token?
+########################
+A Bearer Token is a type of access token used in authentication systems (like JWT, OAuth2) where whoever "bears" (holds) the token is considered authenticated.
+
+It means:
+👉 If you have the token
+👉 You are allowed to access the protected resource
+👉 Without needing to provide username/password again
+
+
+Why do we use substring(7)?
+###########################
+Because the Authorization header contains:  Authorization: Bearer <jwt-token>
+The word "Bearer " is 7 characters long:
+
+| Character | B | e | a | r | e | r | (space) |
+| --------- | - | - | - | - | - | - | ------- |
+| Index     | 0 | 1 | 2 | 3 | 4 | 5 | 6       |
+
+So the actual token starts after index 6.
+To remove the "Bearer " prefix, we do:       String token = header.substring(7);
+
+
+How Do You Validate a JWT?
+###########################
+To validate a JWT, I extract the token from the Authorization header, remove the “Bearer ” prefix, and parse the token using the secret key.
+During parsing, the signature, expiration, and claims are automatically validated.
+If the token is valid, I extract the username, load UserDetails, and set authentication in the SecurityContext.
+This ensures the request is authenticated without hitting the database for every request
+
+What security Config do?
+###########################
+
+SecurityConfig defines the entire security architecture of a Spring Boot application.
+It sets authorization rules, configures authentication providers, adds JWT filters, disables sessions for stateless APIs, and manages CSRF/CORS.
+In short: It tells Spring how to secure every incoming HTTP request.”
+
+What is OAuth2 in Spring Security?
